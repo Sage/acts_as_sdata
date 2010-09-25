@@ -138,8 +138,6 @@ module SData
           end
         end
       end
-
-      extend SData::ActiveRecordExtensions::SdataUuidableMixin
     end
   end
 end
