@@ -1,9 +1,8 @@
 module SData
   class Payload
-    
     attr_accessor :builder, :root_node_name, :included, :selected, :maximum_precedence, :sync, :contract
     attr_accessor :xml_node, :entity, :expand, :dataset
-    
+
     def initialize(params)
       self.builder = Builder::XmlMarkup.new
       self.included = params[:included]
@@ -153,6 +152,5 @@ module SData
       return false if node_name == self.root_node_name
       return !selected.include?(node_name.to_s.camelize(:lower))
     end
-
   end
 end

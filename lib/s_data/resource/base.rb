@@ -20,7 +20,7 @@ module SData
 
       include InstanceMethods
       extend ClassMethods
-      extend SData::PayloadMap
+      extend PayloadMap
       extend Uuid
     end
   end
