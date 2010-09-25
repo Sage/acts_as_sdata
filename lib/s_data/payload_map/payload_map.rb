@@ -1,5 +1,3 @@
-
-
 module SData
   module PayloadMap
     def define_payload_map(map)
@@ -60,7 +58,6 @@ module SData
       def payload
         self
       end
-      
       
       # Walks the payload, loading each association, descending into children, and yielding the tuple
       # [payload_map_definition, node_object(s)] for each node. Can use without a block
@@ -133,5 +130,3 @@ module SData
     end
   end
 end
-
-SData::Resource.extend SData::PayloadMap
