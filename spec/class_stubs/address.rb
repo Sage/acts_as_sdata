@@ -1,6 +1,6 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper'))
 
-class Address < SData::Resource
+class Address < SData::Resource::Base
   
   def self.descends_from_active_record?
     true

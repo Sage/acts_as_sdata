@@ -1,4 +1,4 @@
-class ModelBase < SData::Resource
+class ModelBase < SData::Resource::Base
   attr_accessor :id
   
   def self.name
