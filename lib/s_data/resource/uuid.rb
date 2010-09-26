@@ -7,7 +7,6 @@ module SData
 
       module InstanceMethods
         def uuid
-          puts "def uuid"
           record = sd_uuid
           record ? record.uuid : nil
         end
@@ -17,7 +16,6 @@ module SData
         # http://interop.sage.com/daisy/sdataSync/Link/525-DSY.html, linking scenario 3
         def sd_uuid
           result = SData::SdUuid.find_for_virtual_instance(self)
-          puts "!!! #{self.sdata_uuid_for_record}"
           if result.nil? && (uuid = self.sdata_uuid_for_record)
             if !SData::SdUuid.find_uuid_record_for_virtual_model_owner_and_uuid(self.class, self.owner, uuid)
               result = create_or_update_uuid!(uuid)

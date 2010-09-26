@@ -13,7 +13,6 @@ module SData
         
         def initialize(xml=nil)
           if xml
-            # puts "DigestEntry call xml.read"
             xml.read
             parse(xml)
           end
