@@ -86,7 +86,7 @@ module SData
       end      
 
       def entry_title
-        title_proc = self.class.sdata_options[:title]
+        title_proc = self.sdata_options[:title]
         title_proc ? instance_eval(&title_proc) : default_entity_title
       end
 
@@ -95,7 +95,7 @@ module SData
       end
 
       def entry_content
-        content_proc = self.class.sdata_options[:content]
+        content_proc = self.sdata_options[:content]
         content_proc ? instance_eval(&content_proc) : default_entry_content
       end
       
