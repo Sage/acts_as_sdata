@@ -81,6 +81,10 @@ module SData
         "Billing Boss"
       end
 
+      def sdata_options
+        self.class.sdata_options
+      end      
+
       def entry_title
         title_proc = self.class.sdata_options[:title]
         title_proc ? instance_eval(&title_proc) : default_entity_title
