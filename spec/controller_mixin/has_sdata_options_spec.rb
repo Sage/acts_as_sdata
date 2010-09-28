@@ -3,11 +3,10 @@ require File.join(__DIR__, '..', 'spec_helper')
 
 include SData
 
-describe ControllerMixin, ".has_sdata_options" do
-  describe "given an ActionController::Base class extended by ControllerMixin" do
+describe Resource::Base, ".has_sdata_options" do
+  describe "given an sdata resource" do
     before :all do
-      Base = Class.new ActionController::Base
-      Base.extend ControllerMixin
+      Base = Class.new Resource::Base
     end
 
     before :each do
@@ -21,10 +20,6 @@ describe ControllerMixin, ".has_sdata_options" do
 
     it "should make passed options available for instances" do
       Base.new.sdata_options.should == @options
-    end
-
-    it "should include instance methods" do
-      Base.new.should respond_to(:build_sdata_feed)
     end
   end
 end
