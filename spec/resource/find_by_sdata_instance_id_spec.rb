@@ -1,15 +1,14 @@
 require File.join(File.dirname(__FILE__), '..', 'spec_helper')
 
-describe SData::ActiveRecordExtensions::Mixin, "#find_by_sdata_instance_id" do
-  describe "given a class extended by ActiveRecordExtensions" do
+describe SData::Resource::Base, "#find_by_sdata_instance_id" do
+  describe "given an SData::Resource::Base derivative" do
     before :all do
-      Model = Class.new(ActiveRecord::Base)
-      Model.extend SData::ActiveRecordExtensions::Mixin
+      class Model < SData::Resource::Base; end
     end
 
-    describe "when @@sdata_options contain :instance_id" do
+    describe "when sdata_options contain :instance_id" do
       before :each do
-        Model.class_eval { acts_as_sdata :instance_id => :email }
+        Model.class_eval { has_sdata_options :instance_id => :email }
       end
 
       it "should find by a field assigned to :instance_id option value" do
@@ -19,9 +18,9 @@ describe SData::ActiveRecordExtensions::Mixin, "#find_by_sdata_instance_id" do
       end
     end
 
-    describe "when @@sdata_options does not contain :instance_id" do
+    describe "when sdata_options does not contain :instance_id" do
       before :each do
-        Model.class_eval { acts_as_sdata }
+        Model.class_eval { has_sdata_options }
       end
 
       it "should consider :id as SData instance ID" do

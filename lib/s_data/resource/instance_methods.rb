@@ -70,6 +70,10 @@ module SData
         hash.merge!("sdata:uuid" => self.uuid.to_s) if self.respond_to?("uuid") && !self.uuid.blank?
         hash
       end
+
+      def sdata_options
+        self.class.sdata_options
+      end
       
       protected
 
@@ -80,10 +84,6 @@ module SData
       def sdata_default_author
         "Billing Boss"
       end
-
-      def sdata_options
-        self.class.sdata_options
-      end      
 
       def entry_title
         title_proc = self.sdata_options[:title]
