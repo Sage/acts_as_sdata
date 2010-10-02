@@ -19,6 +19,7 @@ module SData
       end
 
       include InstanceMethods
+      include ToAtom
       extend ClassMethods
       extend PayloadMap
       extend Uuid

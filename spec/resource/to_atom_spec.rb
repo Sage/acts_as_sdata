@@ -1,16 +1,14 @@
 require File.join(File.dirname(__FILE__), '..', 'spec_helper')
                                                           
-describe SData::ActiveRecordExtensions::Mixin, "#to_atom" do
-  describe "given a class extended by ActiveRecordExtensions" do
+describe SData::Resource::ToAtom, "#to_atom" do
+  describe "given a Resource" do
     before :all do
-      class Base
-        extend SData::ActiveRecordExtensions::Mixin
-      end
+      class Base < SData::Resource::Base; end
     end
 
-    describe "when .acts_as_sdata is called without arguments" do
+    describe "when there is no sdata options" do
       before :each do
-        Base.class_eval { acts_as_sdata }
+        Base.class_eval { has_sdata_options Hash.new }
         @model = Base.new
         @model.stub! :id => 1, :name => 'John Smith', :updated_at => Time.now - 1.day, :created_by => @model, :sage_username => 'basic_user' 
         @model.stub! :sdata_content => "Base ##{@model.id}: #{@model.name}", :attributes => {}
@@ -64,11 +62,11 @@ describe SData::ActiveRecordExtensions::Mixin, "#to_atom" do
 #      end
     end
 
-    describe "when .acts_as_sdata is called with arguments" do
+    describe "when there are sdata_options" do
       before :each do
         Base.class_eval do
-          acts_as_sdata :title => lambda { "#{id}: #{name}" },
-                        :content => lambda { "#{name}" }
+          has_sdata_options :title => lambda { "#{id}: #{name}" },
+                            :content => lambda { "#{name}" }
         end
 
         @model = Base.new
