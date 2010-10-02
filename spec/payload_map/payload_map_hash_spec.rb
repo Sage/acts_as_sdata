@@ -1,6 +1,6 @@
 require File.join(File.dirname(__FILE__), '..', 'spec_helper')
 
-include SData::PayloadMap
+include SData::Resource::PayloadMap
 
 describe PayloadMapHash do
   context "given a hash with payload map" do

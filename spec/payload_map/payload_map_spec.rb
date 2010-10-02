@@ -1,6 +1,6 @@
 require File.join(File.dirname(__FILE__), '..', 'spec_helper')
 
-describe SData::PayloadMap do
+describe SData::Resource::PayloadMap do
   context "given sdata model class extended by SData::PayloadMap" do
     before :all do
       class TradingAccount < SData::Resource::Base
