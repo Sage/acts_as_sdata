@@ -1,7 +1,7 @@
 require File.join(File.dirname(__FILE__), '..', 'spec_helper')
 
-describe SData::Resource::ToAtom, "#to_atom" do
-  describe "given a class extended by ActiveRecordExtensions" do
+describe SData::Resource::Base, "#to_atom" do
+  describe "given a Resource" do
     before :all do
       SData::SdUuid.extend SData::Resource::Uuid
       [Customer, Contact].each do |model|
