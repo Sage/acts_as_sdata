@@ -1,17 +1,12 @@
 require File.join(File.dirname(__FILE__), '..', 'spec_helper')
 
-describe SData::ActiveRecordExtensions::Mixin, "#to_atom" do
+describe SData::Resource::ToAtom, "#to_atom" do
   describe "given a class extended by ActiveRecordExtensions" do
     before :all do
-      SData::SdUuid.extend SData::ActiveRecordExtensions::SdataUuidMixin
-      SData::SdUuid.class_eval { acts_as_sdata_uuid }
-      [User, Customer, Contact, Address].each do |model|
-        model.extend SData::ActiveRecordExtensions::Mixin
-        model.extend SData::ActiveRecordExtensions::SdataUuidableMixin
-        model.class_eval { acts_as_sdata }
+      SData::SdUuid.extend SData::Resource::Uuid
+      [Customer, Contact].each do |model|
+        model.class_eval { has_sdata_uuid }
       end
-      Customer.class_eval { has_sdata_uuid }
-      Contact.class_eval { has_sdata_uuid }
     end
 
     def customer_attributes

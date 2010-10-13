@@ -1,5 +1,9 @@
 module SData
   class SdUuid
+    extend SData::Resource::Uuid
+
+    has_sdata_uuid
+
     @@test_uuids = []
     [
       {:sd_class => 'Customer', :bb_model_type => 'Customer', :bb_model_id => 12345, :uuid => 'CUST-10000'},
