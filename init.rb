@@ -2,38 +2,38 @@
 # We can .sort the glob, but still the order would be wrong, and we'd need to have repeated requires in
 # Individual files. Michael and I think it's easier to statically call them all in one place in the right order.
 
-__DIR__ = File.dirname(__FILE__)
+require 'dirge' # TODO inclide into gem dependencies
 
-require File.join(__DIR__, 'lib', 's_data')
-
-common_path = File.join(__DIR__, 'lib', 's_data')
-require File.join(common_path, 'exceptions')
-require File.join(common_path, 'formatting.rb')
-require File.join(common_path, 'controller_mixin', 's_data_instance.rb')
-require File.join(common_path, 'controller_mixin', 's_data_feed.rb')
-require File.join(common_path, 'controller_mixin', 'collection_scope.rb')
-require File.join(common_path, 'controller_mixin', 'actions.rb')
-require File.join(common_path, 'atom_extensions', 'nodes', 'digest.rb')
-require File.join(common_path, 'atom_extensions', 'nodes', 'payload.rb')
-require File.join(common_path, 'atom_extensions', 'nodes', 'sync_state.rb')
-require File.join(common_path, 'payload.rb')
-require File.join(common_path, 'atom_extensions', 'content_mixin.rb')
-require File.join(common_path, 'atom_extensions', 'entry_mixin.rb')
-require File.join(common_path, 'namespace_definitions.rb')
-require File.join(common_path, 'predicate.rb')
-require File.join(common_path, 'trait.rb')
-require File.join(common_path, 'sync', 'resource_mixin.rb')
-require File.join(common_path, 'virtual_base.rb')
-require File.join(common_path, 'resource', 'class_methods')
-require File.join(common_path, 'resource', 'to_atom')
-require File.join(common_path, 'resource', 'instance_methods')
-require File.join(common_path, 'resource', 'resource_identity')
-require File.join(common_path, 'resource', 'uuid.rb')
-require File.join(common_path, 'resource', 'payload_map', 'payload_map_hash.rb')
-require File.join(common_path, 'resource', 'payload_map', 'payload_map.rb')
-require File.join(common_path, 'resource', 'base')
-require File.join(common_path, 'sync', 'actions.rb')
-require File.join(common_path, 'conditions_builder.rb')
-require File.join(common_path, 'diagnosis', 'diagnosis.rb')
-require File.join(common_path, 'diagnosis', 'application_controller_mixin.rb')
-require File.join(common_path, 'diagnosis', 'diagnosis_mapper.rb')
+require ~'lib/s_data'
+require ~'lib/s_data/exceptions'
+require ~'lib/s_data/formatting.rb'
+require ~'lib/s_data/controller_mixin/s_data_instance.rb'
+require ~'lib/s_data/controller_mixin/s_data_feed.rb'
+require ~'lib/s_data/controller_mixin/collection_scope.rb'
+require ~'lib/s_data/controller_mixin/actions.rb'
+require ~'lib/s_data/atom_extensions/nodes/digest.rb'
+require ~'lib/s_data/atom_extensions/nodes/payload.rb'
+require ~'lib/s_data/atom_extensions/nodes/sync_state.rb'
+require ~'lib/s_data/payload.rb'
+require ~'lib/s_data/atom_extensions/content_mixin.rb'
+require ~'lib/s_data/atom_extensions/entry_mixin.rb'
+require ~'lib/s_data/namespace_definitions.rb'
+require ~'lib/s_data/predicate.rb'
+require ~'lib/s_data/trait.rb'
+require ~'lib/s_data/sync/resource_mixin.rb'
+require ~'lib/s_data/virtual_base.rb'
+require ~'lib/s_data/resource/class_methods'
+require ~'lib/s_data/resource/to_atom'
+require ~'lib/s_data/resource/instance_methods'
+require ~'lib/s_data/resource/resource_identity'
+require ~'lib/s_data/resource/uuid.rb'
+require ~'lib/s_data/resource/payload_map/payload_map_hash.rb'
+require ~'lib/s_data/resource/payload_map/payload_map.rb'
+require ~'lib/s_data/resource/base'
+require ~'lib/s_data/sync/actions.rb'
+require ~'lib/s_data/conditions_builder.rb'
+require ~'lib/s_data/diagnosis/diagnosis.rb'
+require ~'lib/s_data/diagnosis/application_controller_mixin.rb'
+require ~'lib/s_data/diagnosis/diagnosis_mapper.rb'
+require ~'lib/s_data/application/old_dsl_support'
+require ~'lib/s_data/application/resource_from_params'
