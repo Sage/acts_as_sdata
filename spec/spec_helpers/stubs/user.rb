@@ -1,4 +1,5 @@
 class User < ModelBase
+  attr_accessor :id
   
   def self.descends_from_active_record?
     true
