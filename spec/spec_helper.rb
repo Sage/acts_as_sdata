@@ -4,25 +4,27 @@ def setup_active_record
 end
 
 require 'atom'
+require 'dirge'
 require 'active_record'
-require 'action_pack'
 require 'webrat'
 
 include Webrat::Matchers
 
 setup_active_record
 
-Dir[File.join(File.dirname(__FILE__), 'spec_helpers', '**', '*.rb')].each { |helper| require helper }
+$:.unshift ~'../lib'
 
-$:.unshift File.join(File.dirname(__FILE__), '..', 'lib')
-__DIR__ = File.dirname(__FILE__)
-require File.expand_path(File.join(__DIR__, '..', 'init'))
-require File.expand_path(File.join(__DIR__, 'class_stubs', 'model_base'))
-require File.expand_path(File.join(__DIR__, 'class_stubs', 'user'))
-require File.expand_path(File.join(__DIR__, 'class_stubs', 'customer'))
-require File.expand_path(File.join(__DIR__, 'class_stubs', 'contact'))
-require File.expand_path(File.join(__DIR__, 'class_stubs', 'address'))
-require File.expand_path(File.join(__DIR__, 'class_stubs', 'sd_uuid'))
+require ~'../init'
+
+require ~'spec_helpers/nokogiri_extensions'
+
+require ~'spec_helpers/stubs/model_base'
+require ~'spec_helpers/stubs/user'
+require ~'spec_helpers/stubs/customer'
+require ~'spec_helpers/stubs/contact'
+require ~'spec_helpers/stubs/address'
+require ~'spec_helpers/stubs/sd_uuid'
+require ~'spec_helpers/stubs/sdata_application'
 
 SData.reset!
 SData.config = {:base_url => 'http://www.example.com', 

@@ -6,14 +6,7 @@ describe SData::ControllerMixin, "#sdata_scope" do
       before :all do
         Object.__send__ :remove_const, :SomeResource if defined?(SomeResource)
 
-        class SDataApplication
-          include SData::ControllerMixin::Actions
-          include SData::Application::ResourceFromParams
-          include SData::Application::OldDslSupport
-        end
-
-        @application = SDataApplication.new
-        
+        @application = SData::TestApplication.new
 
         BaseModel = Class.new(ActiveRecord::Base)
 
