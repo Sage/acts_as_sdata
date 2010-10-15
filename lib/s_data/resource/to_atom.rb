@@ -16,7 +16,7 @@ module SData
         sync = (params[:sync].to_s == 'true')
         expand = ((sync || included.include?('$children')) ? :all_children : :immediate_children)
         
-        returning Atom::Entry.new do |entry|
+        Atom::Entry.new.tap do |entry|
           entry.id = self.sdata_resource_url(dataset)
           entry.title = entry_title
           entry.updated = self.class.sdata_date(self.updated_at)
