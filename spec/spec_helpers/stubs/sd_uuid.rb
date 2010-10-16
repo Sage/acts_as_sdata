@@ -1,6 +1,7 @@
 module SData
   class SdUuid
     extend SData::Resource::Uuid
+    extend SData::Resource::Uuid::SdUuidMethods
 
     has_sdata_uuid
 
