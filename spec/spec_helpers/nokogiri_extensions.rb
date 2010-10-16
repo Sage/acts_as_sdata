@@ -4,7 +4,7 @@ module Nokogiri::ElementExtensions
   end
 
   def attributes_with_ns
-    returning Hash.new do |hash|
+    Hash.new.tap do |hash|
       self.attributes.each_pair do |attr_name, attr|
         key_with_ns = "#{attr.namespace.prefix}:#{attr.name}"
         hash[key_with_ns] = attr.value
