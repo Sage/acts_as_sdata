@@ -1,5 +1,7 @@
 class Customer < ModelBase
 
+  attr_accessor :id
+
   attr_writer :created_by, :name, :number, :contacts, :created_at, :updated_at, :address
   
   def self.descends_from_active_record?
