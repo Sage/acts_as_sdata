@@ -1,4 +1,5 @@
 class Contact < ModelBase
+  attr_accessor :id
   
   attr_writer :customer, :name, :created_at, :updated_at
 
