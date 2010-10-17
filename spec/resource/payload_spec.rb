@@ -28,7 +28,7 @@ describe SData::Resource::Base, "#to_atom" do
 
     describe "given the payload generating conditions" do
       before :each do
-        Customer.extend SData::PayloadMap
+        Customer.extend SData::Resource::PayloadMap
         @customer = Customer.new.populate_defaults
         @customer.id = 12345
         @customer.contacts[0].id = 123
@@ -525,8 +525,8 @@ describe SData::Resource::Base, "#to_atom" do
       end
 
       it "shows custom content and descriptor fields when requested" do
-        Customer.class_eval { acts_as_sdata(:content => :sdata_content) }
-        Contact.class_eval { acts_as_sdata(:content => :sdata_content) }
+        Customer.class_eval { has_sdata_options :content => :sdata_content }
+        Contact.class_eval { has_sdata_options :content => :sdata_content }
 
         payload = payload(:dataset => 'myDataSet', :include => "$descriptor,$children")
 
@@ -605,8 +605,8 @@ describe SData::Resource::Base, "#to_atom" do
       end
       
       it "properly escapes xml content in user data" do
-        Customer.class_eval { acts_as_sdata(:content => :sdata_content) }
-        Contact.class_eval { acts_as_sdata(:content => :sdata_content) }
+        Customer.class_eval { has_sdata_options :content => :sdata_content }
+        Contact.class_eval { has_sdata_options :content => :sdata_content }
         @customer.name = "</crmErp:name><div>asdf</div>"
         @customer.number = "<div>123456</div>"
         @customer.to_atom(:dataset => 'myDataSet').sdata_payload.to_xml.to_s.include?("</crmErp:name><div>asdf</div>").should == false
