@@ -1,17 +1,14 @@
 require File.join(File.dirname(__FILE__), '..', 'spec_helper')
 
-include SData
-
-describe ControllerMixin, "#sdata_collection" do
-  describe "given a model which acts as sdata" do
+describe SData::Diagnosis do
+  describe "given erroneous entries" do
     before :all do
-      Customer.extend SData::ActiveRecordExtensions::Mixin
-      Customer.class_eval { acts_as_sdata }
       class EntryDiagnosisCustomer < Customer
         def resource_header_attributes(*params)
           raise 'Exception while trying to construct payload map'
         end
       end
+
       class FeedDiagnosisCustomer < Customer
         def id
           raise 'Exception while trying to get customer id'
@@ -19,30 +16,30 @@ describe ControllerMixin, "#sdata_collection" do
       end
     end
 
-    describe "given a controller which acts as sdata" do
+    describe "given an SData resource" do
       before :all do
         class Base < ActionController::Base
           extend ControllerMixin
-   
+          
           Base.acts_as_sdata  :model => Customer,
-                              :feed => { :id => 'some-unique-id',
-                                         :author => 'Test Author',
-                                         :path => '/test_resource',
-                                         :title => 'List of Test Items',
-                                         :default_items_per_page => 10,
-                                         :maximum_items_per_page => 100}
+          :feed => { :id => 'some-unique-id',
+            :author => 'Test Author',
+            :path => '/test_resource',
+            :title => 'List of Test Items',
+            :default_items_per_page => 10,
+            :maximum_items_per_page => 100}
         end
       end
-  
+      
       before :each do
         @controller = Base.new
         @controller.stub! :request => OpenStruct.new(
-                            :protocol => 'http://', 
-                            :host_with_port => 'example.com', 
-                            :request_uri => Base.sdata_options[:feed][:path],
-                            :path => SData.store_path + '/-/testResource',
-                            :query_parameters => {}),
-                         :params => {}
+                                                     :protocol => 'http://', 
+                                                     :host_with_port => 'example.com', 
+                                                     :request_uri => Base.sdata_options[:feed][:path],
+                                                     :path => SData.store_path + '/-/testResource',
+                                                     :query_parameters => {}),
+        :params => {}
       end
 
       context "when one entry is erroneous" do
@@ -185,7 +182,7 @@ describe ControllerMixin, "#sdata_collection" do
         end
       end
 
-      context "when exception is raised at the action method leve" do
+      context "when exception is raised at the action method level" do
         before :each do
           @controller.stub!(:sdata_scope).and_raise(Exception.new('exception rendering collection'))
           @controller.should_receive(:render) do |hash|
@@ -207,50 +204,5 @@ describe ControllerMixin, "#sdata_collection" do
         end
       end
     end
-
-    describe "given a controller which acts as sdata" do
-      before :all do
-        
-        class NewBase < ActionController::Base
-          extend ControllerMixin
-          extend SData::ApplicationControllerMixin
-
-          acts_as_sdata :model => Customer,
-                        :feed => { :id => 'some-unique-id',
-                                   :author => 'Test Author',
-                                   :path => '/test_resource',
-                                   :title => 'List of Test Items',
-                                   :default_items_per_page => 10,
-                                   :maximum_items_per_page => 100}
-
-          sdata_rescue_support
-
-          rescue_from Exception, :with => :global_rescue
-
-          def global_rescue
-            if request.env['REQUEST_URI'].match(/^\/sdata/)
-              #this case must happen in ALL rails environments (dev, test, prod, etc.)
-              sdata_global_rescue(exception, request.env['REQUEST_URI'])
-            end
-          end
-        end
-      end
-  
-      before :each do
-        @controller = NewBase.new
-        @controller.stub! :request => OpenStruct.new(
-                            :protocol => 'http://', 
-                            :host_with_port => 'example.com', 
-                            :request_uri => NewBase.sdata_options[:feed][:path],
-                            :path => SData.store_path + '/-/testResource',
-                            :query_parameters => {}),
-                         :params => {}
-      end  
-      
-      it "should catch unhandled feed exception in a handled method exception" do
-        pending #can't figure out how to do it here, perhaps only easily possible in cucumber
-      end
-    end
-    
   end
 end

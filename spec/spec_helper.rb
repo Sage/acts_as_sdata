@@ -17,6 +17,7 @@ $:.unshift ~'../lib'
 require ~'../init'
 
 require ~'spec_helpers/nokogiri_extensions'
+require ~'spec_helpers/raised_exception'
 
 require ~'spec_helpers/stubs/model_base'
 require ~'spec_helpers/stubs/user'

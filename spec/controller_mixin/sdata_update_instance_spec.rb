@@ -1,8 +1,7 @@
 require File.join(File.dirname(__FILE__), '..', 'spec_helper')
 
-include SData
-
-describe ControllerMixin, "#sdata_update_instance" do
+describe SData::Application, "#sdata_update_instance" do
+  before :all do
     class BaseClass
       attr_accessor :status
       def id
@@ -19,47 +18,43 @@ describe ControllerMixin, "#sdata_update_instance" do
       end
     end
 
-    class VirtualModel < SData::Resource::Base
+    Object.__send__ :remove_const, :SomeResource if defined?(SomeResource)
+    class SomeResource < SData::Resource::Base
       attr_accessor :baze
-    end
-    
-    before :all do
-      VirtualModel.stub :baze_class => BaseClass
-      Base = Class.new(ActionController::Base)
-      Base.extend ControllerMixin
-      Base.acts_as_sdata  :model => VirtualModel
-      VirtualModel.acts_as_sdata
-    end
 
+      self.baze_class = BaseClass
+    end
+  end
+
+  before :each do
+    pending # not currently supported
+    @application = SData::TestApplication.new
+  end  
+
+  describe "given params contain Atom::Entry" do
     before :each do
-      pending # not currently supported
-      @controller = Base.new
-    end  
+      @entry = Atom::Entry.new
+      @application.stub!  :params => { :entry => @entry, :instance_id => 1, :sdata_resource => 'SomeResource' },
+        :response => OpenStruct.new,
+        :request => OpenStruct.new(:fresh? => true)
+      
+      @model = VirtualModel.new(BaseClass.new)
+      VirtualModel.should_receive(:new).and_return @model
+    end
 
-    describe "given params contain Atom::Entry" do
+    describe "when update is successful" do
       before :each do
-        @entry = Atom::Entry.new
-        @controller.stub!  :params => { :entry => @entry, :instance_id => 1},
-                                        :response => OpenStruct.new,
-                                        :request => OpenStruct.new(:fresh? => true)
-        
-        @model = VirtualModel.new(BaseClass.new)
-        VirtualModel.should_receive(:new).and_return @model
+        @model.baze.stub! :save => true
+        @model.stub! :to_atom => stub(:to_xml => '<entry></entry>')
       end
 
-      describe "when update is successful" do
-        before :each do
-          @model.baze.stub! :save => true
-          @model.stub! :to_atom => stub(:to_xml => '<entry></entry>')
+      it "should respond with updated" do
+        @controller.should_receive(:render) do |args|
+          #TODO: what should I check for?.. Returns 1 right now, is this right?
         end
-
-        it "should respond with updated" do
-          @controller.should_receive(:render) do |args|
-            #TODO: what should I check for?.. Returns 1 right now, is this right?
-          end
-          @controller.sdata_update_instance
-        end
+        @controller.sdata_update_instance
       end
     end
+  end
 end
 
