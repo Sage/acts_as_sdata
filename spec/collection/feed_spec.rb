@@ -25,10 +25,6 @@ describe SData::Collection::Feed do
     end
 
     it "should respect given feed options"
-
-    # it "should include given links"
-
-    # it "should include given categories"
   end
 
   context "when all entries are healthy" do
@@ -37,11 +33,11 @@ describe SData::Collection::Feed do
     it_should_behave_like "any SData feed"
 
     it "should contain two entries" do
-      feed_xml.xpath('/xmlns:feed/entry').should have(2).entries
+      feed_xml.xpath('xmlns:entry').should have(2).entries
     end
 
     it "should not contain eny diagnoses" do
-      feed_xml.should_not have_xpath("//xmlns:entry/sdata:diagnosis")
+      feed_xml.should_not have_xpath("sdata:diagnosis")
     end
   end
 
@@ -50,9 +46,13 @@ describe SData::Collection::Feed do
 
     it_should_behave_like "any SData feed"
 
-    it "should have no entries"
+    it "should have no entries" do
+      feed_xml.should_not ahve_xpath('xmlns:entry')
+    end
 
-    it "should have no diagnoses"
+    it "should have no diagnoses" do
+      feed_xml.should_not have_xpath("sdata:diagnosis")
+    end
   end
 
   context "when entry payload is erroneous" do
@@ -67,7 +67,7 @@ describe SData::Collection::Feed do
     it_should_behave_like "any SData feed"
 
     it "should contain all scope elements as entries" do
-      feed_xml.xpath('/xmlns:feed/entry').should have(2).entries
+      feed_xml.xpath('/xmlns:feed/xmlns:entry').should have(2).entries
     end
 
     describe "erroneous entry" do
@@ -126,6 +126,30 @@ describe SData::Collection::Feed do
       end
     end
 
+    before { @feed = build_feed(ErroneousCustomer.new, Customer.new) }
+
     it_should_behave_like "any SData feed"
+
+    it "should still include healthy entry" do
+      feed_xml.xpath('/xmlns:feed/xmlns:entry').should have(1).entry
+    end
+
+    it "should include feed diagnosis into response" do
+      feed_xml.xpath('/xmlns:feed/sdata:diagnosis').should have(1).diagnosis
+    end
+  end
+
+  context "when both feed and entry are erroneous" do
+    before { @feed = build_feed(ErroneousCustomer.new, CustomerWithErroneousPayload.new) }
+
+    it_should_behave_like "any SData feed"
+
+    it "should include entry diagnosis" do
+      feed_xml.sould have_xpath('/xmlns:feed/xmlns:entry/sdata:diagnosis')
+    end
+
+    it "should include feed diagnosis" do
+      feed_xml.sould have_xpath('/xmlns:feed/sdata:diagnosis')
+    end
   end
 end
