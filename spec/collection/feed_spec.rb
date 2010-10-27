@@ -24,7 +24,41 @@ describe SData::Collection::Feed do
       feed_xml.should have_xpath('/xmlns:feed[@xmlns="http://www.w3.org/2005/Atom"]')
     end
 
-    it "should respect given feed options"
+    describe "main feed properties" do
+      subject { feed_xml.xpath('xmlns:feed') }
+
+      it "should set id according to given feed options" do
+        subject.xpath('id').should == 'some-unique-id'
+      end
+
+      it "should set author according to given feed options" do
+        subject.xpath('author').should == 'Test Author'
+      end
+
+      it "should set title according to given feed options" do
+        subject.xpath('title').should == 'List of Test Items'
+      end
+    end
+
+    it "should include a category" do
+      feed_xml.should have_xpath('xmlns:feed/xmlns:category')
+    end
+
+    describe "feed category" do
+      subject { feed_xml.xpath('xmlns:feed/xmlns:category') }
+
+      it "should have a term accoring to given SData resource" do
+        subject.xpath('@term').should == 'customers'
+      end
+
+      it "should have a label according to given SData resource" do
+        subject.xpath('@label').should == 'Customers'
+      end
+
+      it "should have an SData scheme" do
+        subject.xpath('@scheme').should == "http://schemas.sage.com/sdata/categories"
+      end
+    end
   end
 
   context "when all entries are healthy" do
