@@ -4,25 +4,11 @@ module SData
   module ControllerMixin
     module Actions
       def sdata_collection
-        begin
-          errors = []
-          collection = build_sdata_feed
-          sdata_scope.each do |entry|
-            begin
-              collection.entries << entry.to_atom(params)
-            rescue Exception => e
-              errors << ApplicationDiagnosis.new(:exception => e).to_xml(:feed)
-            end
-          end
-          #TODO: syntactic sugar if possible (such as diagnosing_errors(&block) which does the dirty work)
-          errors.each do |error|
-            collection[SData.config[:schemas]['sdata'], 'diagnosis'] << error
-          end
-          populate_open_search_for(collection)
-          build_feed_links_for(collection)
-          content_type 'application/atom+xml; type=feed'
-          collection.to_xml
-        end
+        collection_scope = SData::Collection::Scope.new(scoping_options, params, sdata_resource.payload_map)
+        collection = SData::Collection.new(collection_scope, sdata_options[:feed])
+
+        content_type 'application/atom+xml; type=feed'
+        collection.to_xml
       end
 
       def sdata_show_instance
@@ -68,6 +54,7 @@ module SData
         instance.owner == current_user or instance.owner.biller.bookkeepers.include?(current_user.bookkeeper)
       end
 
+      # TODO: find usages, delete if not used
       def handle_exception(exception)
         diagnosis = SData::Diagnosis::DiagnosisMapper.map(exception)
 
@@ -79,7 +66,6 @@ module SData
       end
 
       include SDataInstance
-      include SDataFeed
       include CollectionScope
     end
   end
