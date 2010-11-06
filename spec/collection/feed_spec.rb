@@ -11,8 +11,8 @@ describe SData::Collection::Feed do
     @resource_url = Customer.sdata_resource_kind_url('-')
   end
 
-  def build_feed(entries)
-    SData::Collection::Feed.new(entries, @resource_url, @feed_options)
+  def build_feed(*entries)
+    SData::Collection::Feed.new(Customer, entries, @resource_url, @feed_options)
   end
 
   def feed_xml
@@ -21,11 +21,11 @@ describe SData::Collection::Feed do
 
   shared_examples_for "any SData feed" do
     it "should be an Atom Feed" do
-      feed_xml.should have_xpath('/xmlns:feed[@xmlns="http://www.w3.org/2005/Atom"]')
+      feed_xml.should have_xpath("/xmlns:feed[namespace-uri()='http://www.w3.org/2005/Atom']")
     end
 
     describe "main feed properties" do
-      subject { feed_xml.xpath('xmlns:feed') }
+      subject { feed_xml.xpath('/xmlns:feed') }
 
       it "should set id according to given feed options" do
         subject.xpath('id').should == 'some-unique-id'
@@ -41,11 +41,11 @@ describe SData::Collection::Feed do
     end
 
     it "should include a category" do
-      feed_xml.should have_xpath('xmlns:feed/xmlns:category')
+      feed_xml.should have_xpath('/xmlns:feed/xmlns:category')
     end
 
     describe "feed category" do
-      subject { feed_xml.xpath('xmlns:feed/xmlns:category') }
+      subject { feed_xml.xpath('/xmlns:feed/xmlns:category') }
 
       it "should have a term accoring to given SData resource" do
         subject.xpath('@term').should == 'customers'
@@ -62,26 +62,26 @@ describe SData::Collection::Feed do
   end
 
   context "when all entries are healthy" do
-    before { @feed = build_feed [Customer.new, Customer.new] }
+    before { @feed = build_feed Customer.new, Customer.new }
 
     it_should_behave_like "any SData feed"
 
     it "should contain two entries" do
-      feed_xml.xpath('xmlns:entry').should have(2).entries
+      feed_xml.xpath('/xmlns:feed/xmlns:entry').should have(2).entries
     end
 
     it "should not contain eny diagnoses" do
-      feed_xml.should_not have_xpath("sdata:diagnosis")
+      feed_xml.should_not have_xpath("//sdata:diagnosis")
     end
   end
 
   context "when there is no entries" do
-    subject { @feed = build_feed [] }
+    subject { @feed = build_feed }
 
     it_should_behave_like "any SData feed"
 
     it "should have no entries" do
-      feed_xml.should_not ahve_xpath('xmlns:entry')
+      feed_xml.should_not have_xpath('xmlns:entry')
     end
 
     it "should have no diagnoses" do
@@ -96,7 +96,7 @@ describe SData::Collection::Feed do
       end
     end
 
-    before { @feed = build_feed [Customer.new, CustomerWithErroneousPayload.new] }
+    before { @feed = build_feed Customer.new, CustomerWithErroneousPayload.new }
 
     it_should_behave_like "any SData feed"
 
@@ -115,36 +115,36 @@ describe SData::Collection::Feed do
         subject { feed_xml.xpath('//xmlns:entry/sdata:diagnosis').first }
 
         it "should have 'error' severity" do
-          subject.xpath('sdata:severity/text()').to_s.should == 'error'
+          subject.xpath('sdata:severity/text()').should == 'error'
         end
 
         it "should contain diagnosis type in sdata:sdataCode node" do
-          subject.xpath('sdata:sdataCode/text()').to_s.should == 'ApplicationDiagnosi'
+          subject.xpath('sdata:sdataCode/text()').should == 'ApplicationDiagnosi'
         end
 
         it "should contain actual exception message in sdata:message node" do
-          subject.xpath('sdata:message/text()').to_s.should == "Exception while trying to construct payload map"
+          subject.xpath('sdata:message/text()').should == "Exception while trying to construct payload map"
         end
 
         it "should include stacktrace" do
-          subject.xpath('sdata:stackTrace/text()').to_s.should include('/collection_spec.rb')
+          subject.xpath('sdata:stackTrace/text()').should include('/collection_spec.rb')
         end
       end
     end
 
     describe "healthy entry" do
-      subject { feed_xml.xpath('/xmlns:feed/xmlns:entry').second }
+      subject { feed_xml.xpath('/xmlns:feed/xmlns:entry').to_a.second }
 
       it "should not contain SData diagnosis" do
         subject.should_not have_xpath('sdata:diagnosis')
       end
 
       it "should have non-empty id" do
-        subject.xpath('xmlns:id/text()').to_s.should_not be_empty
+        subject.xpath('xmlns:id/text()').should_not be_empty
       end
 
       it "should have non-empty content" do
-        subject.xpath('xmlns:content/text()').to_s.should_not be_empty
+        subject.xpath('xmlns:content/text()').should_not be_empty
       end
 
       it "should have SData payload" do
@@ -179,11 +179,11 @@ describe SData::Collection::Feed do
     it_should_behave_like "any SData feed"
 
     it "should include entry diagnosis" do
-      feed_xml.sould have_xpath('/xmlns:feed/xmlns:entry/sdata:diagnosis')
+      feed_xml.should have_xpath('/xmlns:feed/xmlns:entry/sdata:diagnosis')
     end
 
     it "should include feed diagnosis" do
-      feed_xml.sould have_xpath('/xmlns:feed/sdata:diagnosis')
+      feed_xml.should have_xpath('/xmlns:feed/sdata:diagnosis')
     end
   end
 end
