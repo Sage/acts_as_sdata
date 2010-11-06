@@ -37,6 +37,11 @@ module SData
     def to_xml(*params)
       node = XML::Node.new("sdata:payload")
       generate! if @xml_node.nil?
+
+      joining_doc = XML::Document.new
+      joining_doc.import(node)
+      joining_doc.import(@xml_node)
+
       node << @xml_node
       return node
     end
