@@ -14,7 +14,13 @@ $:.unshift ~'../lib'
 require ~'../init'
 
 
-require ~'spec_helpers/nokogiri_extensions'
+require 'nokogiri'
+
+
+require ~'spec_helpers/parse_xml'
+require ~'spec_helpers/nokogiri_extensions/xxx_with_ns'
+require ~'spec_helpers/nokogiri_extensions/rspec_friendly_equality_operator'
+
 require ~'spec_helpers/raised_exception'
 require ~'spec_helpers/matchers/have_xpath'
 
