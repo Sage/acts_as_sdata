@@ -6,9 +6,6 @@ end
 require 'atom'
 require 'dirge'
 require 'active_record'
-require 'webrat'
-
-include Webrat::Matchers
 
 setup_active_record
 
@@ -16,8 +13,10 @@ $:.unshift ~'../lib'
 
 require ~'../init'
 
+
 require ~'spec_helpers/nokogiri_extensions'
 require ~'spec_helpers/raised_exception'
+require ~'spec_helpers/matchers/have_xpath'
 
 require ~'spec_helpers/stubs/model_base'
 require ~'spec_helpers/stubs/user'
