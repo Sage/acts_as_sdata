@@ -7,7 +7,7 @@ Spec::Matchers.define :have_xpath do |xpath_string|
     "expected the following XML document to have XPath #{xpath_string}\n #{xml}"
   end
 
-  failure_message_for_should_not do |actual|
+  failure_message_for_should_not do |xml|
     "expected the following XML document not to have XPath #{xpath_string}\n #{xml}"
   end
 end
