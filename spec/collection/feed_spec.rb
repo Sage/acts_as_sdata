@@ -11,6 +11,18 @@ describe SData::Collection::Feed do
     @resource_url = Customer.sdata_resource_kind_url('-')
   end
 
+  #TODO: move to factories
+
+  def healthy_entry
+    Customer.new
+  end
+
+  def entry_with_erroneous_payload
+    Customer.new.tap do |entry|
+      entry.stub!(:resource_header_attributes).and_raise("Something went wrong")
+    end
+  end
+
   def build_feed(*entries)
     SData::Collection::Feed.new(Customer, entries, @resource_url, @feed_options)
   end
@@ -90,13 +102,7 @@ describe SData::Collection::Feed do
   end
 
   context "when entry payload is erroneous" do
-    class CustomerWithErroneousPayload < Customer
-      def resource_header_attributes
-        raise "Something went wrong"
-      end
-    end
-
-    before { @feed = build_feed Customer.new, CustomerWithErroneousPayload.new }
+    before { @feed = build_feed healthy_entry, entry_with_erroneous_payload }
 
     it_should_behave_like "any SData feed"
 
@@ -105,7 +111,7 @@ describe SData::Collection::Feed do
     end
 
     describe "erroneous entry" do
-      subject { feed_xml.xpath('/xmlns:feed/xmlns:entry').first }
+      subject { feed_xml.xpath('/xmlns:feed/xmlns:entry').to_a.second }
 
       it "should contain SData diagnosis" do
         subject.should have_xpath('sdata:diagnosis')
@@ -119,21 +125,21 @@ describe SData::Collection::Feed do
         end
 
         it "should contain diagnosis type in sdata:sdataCode node" do
-          subject.xpath('sdata:sdataCode/text()').should == 'ApplicationDiagnosi'
+          subject.xpath('sdata:sdataCode/text()').should == 'ApplicationDiagnosis'
         end
 
         it "should contain actual exception message in sdata:message node" do
-          subject.xpath('sdata:message/text()').should == "Exception while trying to construct payload map"
+          subject.xpath('sdata:message/text()').should == "Something went wrong"
         end
 
         it "should include stacktrace" do
-          subject.xpath('sdata:stackTrace/text()').should include('/collection_spec.rb')
+          subject.xpath('sdata:stackTrace/text()').to_s.should include('/feed_spec.rb')
         end
       end
     end
 
     describe "healthy entry" do
-      subject { feed_xml.xpath('/xmlns:feed/xmlns:entry').to_a.second }
+      subject { feed_xml.xpath('/xmlns:feed/xmlns:entry').first }
 
       it "should not contain SData diagnosis" do
         subject.should_not have_xpath('sdata:diagnosis')
