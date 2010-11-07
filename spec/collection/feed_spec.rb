@@ -23,6 +23,12 @@ describe SData::Collection::Feed do
     end
   end
 
+  def completely_erroneous_entry
+    Customer.new.tap do |entry|
+      entry.stub!(:id).and_raise("Something went wrong")
+    end
+  end  
+
   def build_feed(*entries)
     SData::Collection::Feed.new(Customer, entries, @resource_url, @feed_options)
   end
@@ -74,7 +80,7 @@ describe SData::Collection::Feed do
   end
 
   context "when all entries are healthy" do
-    before { @feed = build_feed Customer.new, Customer.new }
+    before { @feed = build_feed healthy_entry, healthy_entry }
 
     it_should_behave_like "any SData feed"
 
@@ -160,13 +166,7 @@ describe SData::Collection::Feed do
   end
 
   context "when the whole entry is erroneous" do
-    class ErroneousCustomer < Customer
-      def id
-        raise "Something went wrong"
-      end
-    end
-
-    before { @feed = build_feed(ErroneousCustomer.new, Customer.new) }
+    before { @feed = build_feed(completely_erroneous_entry, healthy_entry) }
 
     it_should_behave_like "any SData feed"
 
@@ -180,7 +180,7 @@ describe SData::Collection::Feed do
   end
 
   context "when both feed and entry are erroneous" do
-    before { @feed = build_feed(ErroneousCustomer.new, CustomerWithErroneousPayload.new) }
+    before { @feed = build_feed(completely_erroneous_entry, entry_with_erroneous_payload) }
 
     it_should_behave_like "any SData feed"
 
