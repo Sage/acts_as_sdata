@@ -46,15 +46,15 @@ describe SData::Collection::Feed do
       subject { feed_xml.xpath('/xmlns:feed') }
 
       it "should set id according to given feed options" do
-        subject.xpath('id').should == 'some-unique-id'
+        subject.xpath('xmlns:id/text()').should == 'some-unique-id'
       end
 
       it "should set author according to given feed options" do
-        subject.xpath('author').should == 'Test Author'
+        subject.xpath('xmlns:author/xmlns:name/text()').should == 'Test Author'
       end
 
       it "should set title according to given feed options" do
-        subject.xpath('title').should == 'List of Test Items'
+        subject.xpath('xmlns:title/text()').should == 'List of Test Items'
       end
     end
 
