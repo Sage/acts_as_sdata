@@ -76,7 +76,7 @@ describe SData::Collection::Feed do
   end
 
   context "when there is no entries" do
-    subject { @feed = build_feed }
+    before { @feed = build_feed }
 
     it_should_behave_like "any SData feed"
 
