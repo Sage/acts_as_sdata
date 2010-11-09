@@ -15,11 +15,16 @@ require ~'../init'
 
 
 require 'nokogiri'
+require 'factory_girl'
 
+require ~'spec_helpers/fixtures/feed'
+require ~'spec_helpers/fixtures/customer'
+require ~'spec_helpers/fixtures/entry'
 
 require ~'spec_helpers/parse_xml'
 require ~'spec_helpers/nokogiri_extensions/xxx_with_ns'
 require ~'spec_helpers/nokogiri_extensions/rspec_friendly_equality_operator'
+require ~'spec_helpers/remove_constants'
 
 require ~'spec_helpers/raised_exception'
 require ~'spec_helpers/matchers/have_xpath'
