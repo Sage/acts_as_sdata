@@ -2,8 +2,7 @@ require File.join(File.dirname(__FILE__), '..', 'spec_helper')
 
 describe SData::Collection::Feed do
   before do
-    @feed_options = { :id => 'some-unique-id',
-            :author => 'Test Author',
+    @feed_options = { :author => 'Test Author',
             :path => '/test_resource',
             :title => 'List of Test Items',
             :default_items_per_page => 10,
@@ -44,10 +43,6 @@ describe SData::Collection::Feed do
 
     describe "main feed properties" do
       subject { feed_xml.xpath('/xmlns:feed') }
-
-      it "should set id according to given feed options" do
-        subject.xpath('xmlns:id/text()').should == 'some-unique-id'
-      end
 
       it "should set author according to given feed options" do
         subject.xpath('xmlns:author/xmlns:name/text()').should == 'Test Author'
