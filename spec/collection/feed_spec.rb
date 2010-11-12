@@ -1,35 +1,14 @@
 require File.join(File.dirname(__FILE__), '..', 'spec_helper')
 
 describe SData::Collection::Feed do
-  before do
-    @feed_options = { :author => 'Test Author',
+  def build_feed(*entries)
+   feed_options = { :author => 'Test Author',
             :path => '/test_resource',
             :title => 'List of Test Items',
             :default_items_per_page => 10,
             :maximum_items_per_page => 100 }
-    @resource_url = Customer.sdata_resource_kind_url('-')
-  end
 
-  #TODO: move to factories
-
-  def healthy_entry
-    Customer.new
-  end
-
-  def entry_with_erroneous_payload
-    Customer.new.tap do |entry|
-      entry.stub!(:resource_header_attributes).and_raise("Something went wrong")
-    end
-  end
-
-  def completely_erroneous_entry
-    Customer.new.tap do |entry|
-      entry.stub!(:id).and_raise("Something went wrong")
-    end
-  end  
-
-  def build_feed(*entries)
-    SData::Collection::Feed.new(Customer, entries, @resource_url, @feed_options)
+    SData::Collection::Feed.new(Customer, '-', feed_options, entries)
   end
 
   def feed_xml
@@ -75,7 +54,7 @@ describe SData::Collection::Feed do
   end
 
   context "when all entries are healthy" do
-    before { @feed = build_feed healthy_entry, healthy_entry }
+    before { @feed = build_feed Factory.build(:healthy_entry), Factory.build(:healthy_entry) }
 
     it_should_behave_like "any SData feed"
 
@@ -103,7 +82,7 @@ describe SData::Collection::Feed do
   end
 
   context "when entry payload is erroneous" do
-    before { @feed = build_feed healthy_entry, entry_with_erroneous_payload }
+    before { @feed = build_feed Factory.build(:healthy_entry), Factory.build(:entry_with_erroneous_payload) }
 
     it_should_behave_like "any SData feed"
 
@@ -161,7 +140,7 @@ describe SData::Collection::Feed do
   end
 
   context "when the whole entry is erroneous" do
-    before { @feed = build_feed(completely_erroneous_entry, healthy_entry) }
+    before { @feed = build_feed(Factory.build(:completely_erroneous_entry), Factory.build(:healthy_entry)) }
 
     it_should_behave_like "any SData feed"
 
@@ -175,7 +154,7 @@ describe SData::Collection::Feed do
   end
 
   context "when both feed and entry are erroneous" do
-    before { @feed = build_feed(completely_erroneous_entry, entry_with_erroneous_payload) }
+    before { @feed = build_feed(Factory.build(:completely_erroneous_entry), Factory.build(:entry_with_erroneous_payload)) }
 
     it_should_behave_like "any SData feed"
 
