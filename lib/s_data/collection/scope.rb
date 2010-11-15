@@ -1,12 +1,10 @@
 module SData
   class Collection
-    class Scope < Struct.new(:resource_class, :linked)
+    class Scope < Struct.new(:resource_class, :params, :pagination)
       attr_reader :entry_count, :entries
-      
-      attr_accessor :linked
-      
+
       def linked?
-        !! linked
+        params[:condition] == "$linked"
       end
 
       def scope!
@@ -19,10 +17,6 @@ module SData
       protected
 
       attr_writer :entry_count, :entries
-
-      def is_linked_request?
-        params[:condition] == "$linked"
-      end
 
       def where_clause_from_params
         # this implementation is 3-4 times faster than previous one
@@ -49,10 +43,9 @@ module SData
       #                 lambda{|context| {:conditions =>{:user_id => context.current_user}}}
       def with_sdata_scope #:yields: scoped_model_class
         scope = model_class.sdata_scope_for_context(self)
-        
+
         model_class.with_predicate(where_clause_from_params) do
           model_class.with_linking(linked?) do
-            # ????! how do two methods above affect this scope?!?!?
             yield scope
           end
         end
