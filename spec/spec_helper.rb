@@ -17,7 +17,6 @@ require ~'../init'
 require 'nokogiri'
 require 'factory_girl'
 
-require ~'spec_helpers/fixtures/feed'
 require ~'spec_helpers/fixtures/customer'
 require ~'spec_helpers/fixtures/entry'
 
