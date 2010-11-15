@@ -4,11 +4,11 @@ module SData
   module ControllerMixin
     module Actions
       def sdata_collection
-        collection_scope = SData::Collection::Scope.new(scoping_options, params, sdata_resource.payload_map)
-        collection = SData::Collection.new(collection_scope, sdata_options[:feed])
+        collection_scope = SData::Collection::Scope.new(scoping_options, params, sdata_resource, pagination)
+        collection_feed = SData::Collection::Feed.new(sdata_resource, params[:dataset], sdata_options[:feed], collection_scope)
 
         content_type 'application/atom+xml; type=feed'
-        collection.to_xml
+        collection_feed.to_xml
       end
 
       def sdata_show_instance
@@ -39,7 +39,14 @@ module SData
           instance.to_atom(params).to_xml
       end
 
-    protected      
+      protected
+
+      def pagination
+        SData::Collection::Pagination.new(sdata_options[:feed][:default_items_per_page],
+                                          sdata_options[:feed][:maximum_items_per_page],
+                                          params[:startIndex].to_i,
+                                          params[:count].to_i)
+      end
 
       def assert_access_to(instance)
         raise "Unauthenticated" unless logged_in?
