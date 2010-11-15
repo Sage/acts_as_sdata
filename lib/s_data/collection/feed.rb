@@ -1,24 +1,29 @@
 # -*- coding: utf-8 -*-
 module SData
   class Collection
-    class Feed < Struct.new(:resource_class, :dataset, :feed_options, :entries)
+    class Feed < Struct.new(:resource_class, :params, :feed_options, :entries)
       def initialize(*args)
-        super(args)
+        super(*args)
 
         build_resource_url
         build_atom_feed
 
         atom_feed.set_properties(resource_class, resource_url, feed_options)
-        atom_feed.assign_entries(entries)
+        
 #        atom_feed.populate_open_search
  #       atom_feed.build_feed_links
       end
 
       def to_xml
+        atom_feed.assign_entries(entries, params)
         atom_feed.to_xml
       end
 
       protected
+
+      def dataset
+        params[:dataset]
+      end      
 
       def build_resource_url
         self.resource_url = Customer.sdata_resource_kind_url(dataset)
@@ -47,17 +52,17 @@ module SData
                                                 :label  => category_term.underscore.humanize.titleize)
         end
 
-        def assign_entries(entries)
+        def assign_entries(entries, params)
           entries.each do |entry|
             begin
-              add_entry(entry)
+              add_entry(entry, params)
             rescue Exception => exception
               add_error(exception)
             end
           end
         end
 
-        def add_entry(entry)
+        def add_entry(entry, params)
           self.entries << entry.to_atom(params)
         end    
 

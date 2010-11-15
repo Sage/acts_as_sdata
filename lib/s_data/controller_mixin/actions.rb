@@ -4,8 +4,8 @@ module SData
   module ControllerMixin
     module Actions
       def sdata_collection
-        collection_scope = SData::Collection::Scope.new(scoping_options, params, sdata_resource, pagination)
-        collection_feed = SData::Collection::Feed.new(sdata_resource, params[:dataset], sdata_options[:feed], collection_scope)
+        collection_scope = SData::Collection::Scope.new(sdata_resource, params, pagination)
+        collection_feed = SData::Collection::Feed.new(sdata_resource, params, sdata_options[:feed], collection_scope)
 
         content_type 'application/atom+xml; type=feed'
         collection_feed.to_xml
@@ -73,7 +73,6 @@ module SData
       end
 
       include SDataInstance
-      include CollectionScope
     end
   end
 end
