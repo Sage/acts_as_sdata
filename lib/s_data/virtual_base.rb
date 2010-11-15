@@ -168,8 +168,6 @@ module SData
         end
       end
 
-      extend Scoping
-
       module Scoping
         def with_pagination(offset, records_to_return, &block)
           if offset.nil?        
@@ -233,6 +231,8 @@ module SData
           self.baze_class = old_baze_class
         end
       end
+      
+      extend Scoping
     end
   end
 end
