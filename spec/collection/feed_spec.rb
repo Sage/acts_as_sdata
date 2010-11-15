@@ -8,7 +8,8 @@ describe SData::Collection::Feed do
             :default_items_per_page => 10,
             :maximum_items_per_page => 100 }
 
-    SData::Collection::Feed.new(Customer, '-', feed_options, entries)
+    params = { :dataset => '-' }
+    SData::Collection::Feed.new(Customer,  params,feed_options,  entries)
   end
 
   def feed_xml
