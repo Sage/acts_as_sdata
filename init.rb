@@ -7,6 +7,7 @@ require 'dirge' # TODO inclide into gem dependencies
 require ~'lib/s_data'
 require ~'lib/s_data/exceptions'
 require ~'lib/s_data/formatting.rb'
+require ~'lib/s_data/collection/pagination'
 require ~'lib/s_data/collection/collection'
 require ~'lib/s_data/collection/feed'
 require ~'lib/s_data/collection/scope'
