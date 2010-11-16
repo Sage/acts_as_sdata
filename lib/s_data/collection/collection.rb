@@ -1,5 +1,5 @@
 module SData
-  class Collection < Struct.new(:scope, :feed_options)
+  class Collection
     def to_xml
       build_feed
       feed.to_xml
