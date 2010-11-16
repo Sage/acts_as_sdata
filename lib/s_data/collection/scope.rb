@@ -42,10 +42,10 @@ module SData
       #     named_scope :sdata_scope_for_context, 
       #                 lambda{|context| {:conditions =>{:user_id => context.current_user}}}
       def with_sdata_scope #:yields: scoped_model_class
-        scope = model_class.sdata_scope_for_context(self)
+        scope = resource_class.sdata_scope_for_context(self)
 
-        model_class.with_predicate(where_clause_from_params) do
-          model_class.with_linking(linked?) do
+        resource_class.with_predicate(where_clause_from_params) do
+          resource_class.with_linking(linked?) do
             yield scope
           end
         end
