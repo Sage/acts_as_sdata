@@ -219,7 +219,7 @@ describe SData::Collection, "opensearch" do
         end  
 
         it "should combine start index with count" do
-          @feed = build_seed :startIndex => '9', :count => '10'
+          @feed = build_feed :startIndex => '9', :count => '10'
           
           @feed.opensearch("itemsPerPage").should == 10
           @feed.opensearch("totalResults").should == 15
@@ -230,7 +230,7 @@ describe SData::Collection, "opensearch" do
         end 
 
         it "should accept query to return no records" do
-          @feed = build_seed :count => '0'
+          @feed = build_feed :count => '0'
           
           @feed.opensearch("itemsPerPage").should == 0
           @feed.opensearch("totalResults").should == 15
@@ -240,7 +240,7 @@ describe SData::Collection, "opensearch" do
         end
 
         it "should accept query to return more records than default value but less than maximum value" do
-          @feed = build_seed :count => '50'
+          @feed = build_feed :count => '50'
           
           @feed.opensearch("itemsPerPage").should == 50
           @feed.opensearch("totalResults").should == 15
@@ -252,7 +252,7 @@ describe SData::Collection, "opensearch" do
         end
 
         it "should reject query to return more records than maximum value, and use maximum instead" do
-          @feed = build_seed(:count => '300')
+          @feed = build_feed(:count => '300')
           
           @feed.opensearch("itemsPerPage").should == 100
           @feed.opensearch("totalResults").should == 15
@@ -267,7 +267,7 @@ describe SData::Collection, "opensearch" do
       #FIXME: breaks right now. would be nice to fix without breaking any other tests
       #find out what's a method to determine whether a string is numerical ('asdf'.to_i returns 0 which is bad)
       it "should reject invalid value and return default instead" do
-        @feed = build_seed :count => 'asdf'
+        @feed = build_feed :count => 'asdf'
         
         @feed.opensearch("itemsPerPage").should == 5
         @feed.opensearch("totalResults").should == 15
@@ -279,7 +279,7 @@ describe SData::Collection, "opensearch" do
       end
       
       it "should reject negative value and return default instead" do
-        @feed = build_seed :count => '-3'
+        @feed = build_feed :count => '-3'
         
         @feed.opensearch("itemsPerPage").should == 5
         @feed.opensearch("totalResults").should == 15
@@ -297,7 +297,7 @@ describe SData::Collection, "opensearch" do
       #specifies that ALL pages must have exactly the same items as itemsPerPage with possible exception 
       #of ONLY the last page, and not the first one.
       it "should combine start index with count not exceeding totals" do
-        @feed = build_seed :startIndex => '3', :count => '5'
+        @feed = build_feed :startIndex => '3', :count => '5'
         
         @feed.opensearch("itemsPerPage").should == 5
         @feed.opensearch("totalResults").should == 15
@@ -309,7 +309,7 @@ describe SData::Collection, "opensearch" do
       end  
       
       it "should combine start index with count exceeding totals" do
-        @feed = build_seed :startIndex => '9', :count => '10'
+        @feed = build_feed :startIndex => '9', :count => '10'
         
         @feed.opensearch("itemsPerPage").should == 10
         @feed.opensearch("totalResults").should == 15
