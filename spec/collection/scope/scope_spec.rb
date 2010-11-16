@@ -17,7 +17,8 @@ describe SData::Collection::Scope do
   end
 
   def build_collection_scope(params)
-    SData::Collection::Scope.new(SomeResource, @target_user, :params => params)
+    pagination = Factory.build(:pagination)
+    SData::Collection::Scope.new(SomeResource, params, pagination)
   end  
 
   context "when model is non-linked" do
@@ -26,6 +27,7 @@ describe SData::Collection::Scope do
 
       it "should apply to SData::Predicate for conditions" do
         SomeResource.should_receive(:all).with(:conditions => ["\"born_at\" > ?", '1900']).and_return(@returned_entities)
+        subject.scope!
         subject.entries.should == @returned_entries
       end
 
@@ -34,6 +36,7 @@ describe SData::Collection::Scope do
 
         it "should parse it correctly" do
           SomeResource.should_receive(:all).with(:conditions => ["\"born_at\" <> ?", '1900']).and_return(@expected_entries)
+          subject.scope!
           subject.entries.should == @returned_entries
         end
       end
@@ -44,6 +47,7 @@ describe SData::Collection::Scope do
 
       it "should return all entity records" do
         SomeResource.should_receive(:all).with(no_args()).and_return(@expected_entries)
+        subject.scope!
         subject.entries.should == @returned_entries
       end
     end
@@ -62,6 +66,7 @@ describe SData::Collection::Scope do
 
         it "should apply to SData::Predicate for conditions and append requirement for simply guid" do
           BaseModel.should_receive(:find_with_deleted).with(:all, {:conditions => ['"born_at" > ? and id IN (SELECT bb_model_id FROM sd_uuids WHERE bb_model_type = \'BaseModel\' and sd_class = \'SomeResource\')', '1900']}).and_return(@returned_entries)
+          subject.scope!
           subject.entries.should == @returned_entries
         end
       end
@@ -71,6 +76,7 @@ describe SData::Collection::Scope do
 
         it "should return all entity records with simply guid" do
           BaseModel.should_receive(:find_with_deleted).with(:all, {:conditions => ['id IN (SELECT bb_model_id FROM sd_uuids WHERE bb_model_type = \'BaseModel\' and sd_class = \'SomeResource\')']}).and_return([@returned_entries])
+          subject.scope!
           subject.entries.should == @returned_entries
         end
       end
@@ -90,6 +96,7 @@ describe SData::Collection::Scope do
 
       it "should return all entity records created_by scope" do
         SomeResource.should_receive(:all).with(:conditions => ['created_by_id = ?', "#{@user.id}"]).and_return(@returned_entries)
+        subject.scope!
         subject.entries.should == @returned_entries
       end
     end
@@ -99,6 +106,7 @@ describe SData::Collection::Scope do
 
       it "should return all entity records with created_by, predicate, and link scope" do
         BaseModel.should_receive(:find_with_deleted).with(:all, {:conditions => ['"born_at" > ? and created_by_id = ? and id IN (SELECT bb_model_id FROM sd_uuids WHERE bb_model_type = \'BaseModel\' and sd_class = \'SomeResource\')', '1900', @user.id.to_s]}).and_return([@returned_entries])
+        subject.scope!
         subject.entries.should == @returned_entries
       end
     end
