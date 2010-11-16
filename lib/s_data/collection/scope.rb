@@ -27,7 +27,7 @@ module SData
 
       def with_paginated_sdata_scope #:yields: scoped_model_class
         with_sdata_scope do |scope|
-          model_class.with_pagination(zero_based_start_index, records_to_return) do
+          resource_class.with_pagination(zero_based_start_index, records_to_return) do
             yield scope
           end
         end
@@ -41,7 +41,7 @@ module SData
       #
       #     named_scope :sdata_scope_for_context, 
       #                 lambda{|context| {:conditions =>{:user_id => context.current_user}}}
-      def with_sdata_scope #:yields: scoped_model_class
+      def with_sdata_scope #:yields: scoped_resource_class
         scope = resource_class.sdata_scope_for_context(self)
 
         resource_class.with_predicate(where_clause_from_params) do
