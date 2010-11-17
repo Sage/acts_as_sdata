@@ -82,7 +82,9 @@ module SData
     def reset!
       @config = nil
     end
-    
-    
+
+    def enforce_scoping?
+      !!@config[:enforce_scoping]
+    end
   end
 end
