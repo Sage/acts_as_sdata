@@ -8,6 +8,7 @@ module SData
     end
 
     def find(*params)
+
       virtual_base_class.new(scope.find(*params))
     end
 
@@ -169,11 +170,11 @@ module SData
       end
 
       module Scoping
-        def with_pagination(offset, records_to_return, &block)
-          if offset.nil?        
+        def with_pagination(pagination, &block)
+          if pagination.zero_based_start_index.nil?
             yield self
           else
-            options = {:offset => offset, :limit => records_to_return}
+            options = {:offset => pagination.zero_based_start_index, :limit => pagination.records_to_return}
             self.baze_class.with_scope(:find => options) do
               yield self
             end
