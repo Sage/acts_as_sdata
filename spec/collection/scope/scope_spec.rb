@@ -11,24 +11,19 @@ describe SData::Collection::Scope do
 
       define_payload_map :born_at => { :baze_field => :born_at }
     end
-
-    @target_user = User.new.populate_defaults
-    @returned_entries = [SomeResource.new, SomeResource.new]
   end
 
   def build_collection_scope(params)
     pagination = Factory.build(:pagination)
     SData::Collection::Scope.new(SomeResource, params, pagination)
-  end  
+  end
 
   context "when model is non-linked" do
     context "when params contain where clause" do
       subject { build_collection_scope 'where bornAt gt 1900' => nil }
 
       it "should apply to SData::Predicate for conditions" do
-        SomeResource.should_receive(:all).with(:conditions => ["\"born_at\" > ?", '1900']).and_return(@returned_entities)
-        subject.scope!
-        subject.entries.should == @returned_entries
+        subject.scope.scoped_methods.should == { :conditions => ["\"born_at\" > ?", '1900'] }
       end
 
       context "when condition contain 'ne' relation" do
@@ -36,8 +31,6 @@ describe SData::Collection::Scope do
 
         it "should parse it correctly" do
           SomeResource.should_receive(:all).with(:conditions => ["\"born_at\" <> ?", '1900']).and_return(@expected_entries)
-          subject.scope!
-          subject.entries.should == @returned_entries
         end
       end
     end
@@ -46,9 +39,9 @@ describe SData::Collection::Scope do
       subject { build_collection_scope {} }
 
       it "should return all entity records" do
-        SomeResource.should_receive(:all).with(no_args()).and_return(@expected_entries)
-        subject.scope!
-        subject.entries.should == @returned_entries
+        subject.scope.scoped_methods.should == {}
+        
+        
       end
     end
   end
@@ -65,9 +58,7 @@ describe SData::Collection::Scope do
         subject { build_collection_scope 'where born_at gt 1900' => nil, :condition => '$linked' }
 
         it "should apply to SData::Predicate for conditions and append requirement for simply guid" do
-          BaseModel.should_receive(:find_with_deleted).with(:all, {:conditions => ['"born_at" > ? and id IN (SELECT bb_model_id FROM sd_uuids WHERE bb_model_type = \'BaseModel\' and sd_class = \'SomeResource\')', '1900']}).and_return(@returned_entries)
-          subject.scope!
-          subject.entries.should == @returned_entries
+          BaseModel.should_receive(:find_with_deleted).with(:all, {:conditions => ['"born_at" > ? and id IN (SELECT bb_model_id FROM sd_uuids WHERE bb_model_type = \'BaseModel\' and sd_class = \'SomeResource\')', '1900']}
         end
       end
 
@@ -76,8 +67,6 @@ describe SData::Collection::Scope do
 
         it "should return all entity records with simply guid" do
           BaseModel.should_receive(:find_with_deleted).with(:all, {:conditions => ['id IN (SELECT bb_model_id FROM sd_uuids WHERE bb_model_type = \'BaseModel\' and sd_class = \'SomeResource\')']}).and_return([@returned_entries])
-          subject.scope!
-          subject.entries.should == @returned_entries
         end
       end
     end
@@ -95,9 +84,7 @@ describe SData::Collection::Scope do
       subject { build_collection_scope {} }
 
       it "should return all entity records created_by scope" do
-        SomeResource.should_receive(:all).with(:conditions => ['created_by_id = ?', "#{@user.id}"]).and_return(@returned_entries)
-        subject.scope!
-        subject.entries.should == @returned_entries
+        subject.scope.scoped_methods.should == { :conditions => ['created_by_id = ?', "#{@user.id}"] }
       end
     end
 
@@ -106,8 +93,6 @@ describe SData::Collection::Scope do
 
       it "should return all entity records with created_by, predicate, and link scope" do
         BaseModel.should_receive(:find_with_deleted).with(:all, {:conditions => ['"born_at" > ? and created_by_id = ? and id IN (SELECT bb_model_id FROM sd_uuids WHERE bb_model_type = \'BaseModel\' and sd_class = \'SomeResource\')', '1900', @user.id.to_s]}).and_return([@returned_entries])
-        subject.scope!
-        subject.entries.should == @returned_entries
       end
     end
   end
