@@ -27,7 +27,7 @@ module SData
 
       def with_paginated_sdata_scope #:yields: scoped_model_class
         with_sdata_scope do |scope|
-          resource_class.with_pagination(zero_based_start_index, records_to_return) do
+          resource_class.with_pagination(pagination) do
             yield scope
           end
         end
