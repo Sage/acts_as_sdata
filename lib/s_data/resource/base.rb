@@ -23,6 +23,7 @@ module SData
       extend ClassMethods
       extend PayloadMap
       extend Uuid
+      extend Scoping
     end
   end
-end 
+end
