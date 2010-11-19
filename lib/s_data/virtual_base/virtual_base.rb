@@ -138,9 +138,6 @@ module SData
           end
         end
       end
-
-      
-      extend Scoping
     end
   end
 end
