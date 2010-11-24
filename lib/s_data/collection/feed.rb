@@ -26,7 +26,7 @@ module SData
       end      
 
       def build_resource_url
-        self.resource_url = Customer.sdata_resource_kind_url(dataset)
+        self.resource_url = resource_class.sdata_resource_kind_url(dataset)
       end
 
       def build_atom_feed
