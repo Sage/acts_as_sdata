@@ -28,6 +28,14 @@ describe SData::Resource do
           SData::Resource::Base.registered_resources[:postal_address].should == SData::Contracts::CrmErp::PostalAddress
         end
       end
+
+      describe "derived class" do
+        subject { TradingAccount }
+
+        it "should respond to SData-related class methods" do
+          subject.should respond_to(:sdata_resource_kind_url)
+        end
+      end
     end
   end
 
