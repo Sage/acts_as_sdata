@@ -10,8 +10,12 @@ module SData
       end
 
       def with_predicate(raw_predicate, &block)
-        predicate = SData::Predicate.parse(self.payload_map.baze_fields, raw_predicate)
-        with_conditions(predicate.to_conditions, &block)
+        if raw_predicate.nil?
+          yield self
+        else
+          predicate = SData::Predicate.parse(self.payload_map.baze_fields, raw_predicate)
+          with_conditions(predicate.to_conditions, &block)
+        end
       end
 
       # TODO: rename bb_model_id and bb_model_type to model_id and model_type
