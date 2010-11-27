@@ -27,7 +27,7 @@ module SData
 
       def with_paginated_sdata_scope #:yields: scoped_model_class
         with_sdata_scope do |scope|
-          resource_class.with_pagination(pagination) do
+          scope.with_pagination(pagination) do |scope|
             yield scope
           end
         end
@@ -44,8 +44,8 @@ module SData
       def with_sdata_scope #:yields: scoped_resource_class
         scope = resource_class.sdata_scope_for_context(self)
 
-        resource_class.with_predicate(where_clause_from_params) do
-          resource_class.with_linking(linked?) do
+        resource_class.with_predicate(where_clause_from_params) do |scope|
+          resource_class.with_linking(linked?) do |scope|
             yield scope
           end
         end
