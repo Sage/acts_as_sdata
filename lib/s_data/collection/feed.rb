@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 module SData
   class Collection
-    class Feed < Struct.new(:resource_class, :params, :feed_options, :entries)
+    class Feed < Struct.new(:resource_class, :params, :feed_options, :scope)
       def initialize(*args)
         super(*args)
 
@@ -15,7 +15,7 @@ module SData
       end
 
       def to_xml
-        atom_feed.assign_entries(entries, params)
+        atom_feed.assign_entries(scope.entries, params)
         atom_feed.to_xml
       end
 
