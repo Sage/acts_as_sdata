@@ -4,6 +4,11 @@ include SData
 
 describe Predicate do
   context "when predicate string is valid" do
+    it "should convert given where clause to ActiveRecord conditions" do
+      predicate = Predicate.parse({ :name => :name }, "name eq Second")
+      predicate.to_conditions.should == ["\"name\" = ?", 'Second']
+    end
+    
     it "should convert given field name from hungarian notation to underscore notation" do
       predicate = Predicate.parse({ :born_at => :born_at }, "bornAt gt 1900")
       ConditionsBuilder.should_receive(:build_conditions).with(:born_at, :gt, '1900')
