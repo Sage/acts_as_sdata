@@ -25,7 +25,7 @@ module SData
           tablename = self.baze_class_name.tableize
           with_conditions("#{tablename}.id IN (SELECT bb_model_id FROM sd_uuids WHERE #{uuid_clause}(bb_model_type = '#{baze_class_name}') and (sd_class = '#{sdata_name}'))", &block)
         else
-          self
+          yield self
         end
       end
 
