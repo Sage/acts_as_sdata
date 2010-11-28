@@ -1,6 +1,6 @@
 module SData
   class Collection
-    class Scope < Struct.new(:resource_class, :params, :pagination)
+    class Scope < Struct.new(:resource_class, :params, :target_user, :pagination)
       attr_reader :entry_count, :entries
 
       def linked?
@@ -33,6 +33,10 @@ module SData
         end
       end
 
+      def initial_scope
+        resource_class.sdata_scope_for_context(target_user)
+      end
+      
       # Yields the sdata model class (a SData::VirtualBase) scoped with context scope and any 
       # where clause (sdata predicate) found in the request.
       # To use the context scope, VirtualBase subclasses should set their baze_class to a
@@ -42,10 +46,8 @@ module SData
       #     named_scope :sdata_scope_for_context, 
       #                 lambda{|context| {:conditions =>{:user_id => context.current_user}}}
       def with_sdata_scope #:yields: scoped_resource_class
-        scope = resource_class.sdata_scope_for_context(self)
-
-        resource_class.with_predicate(where_clause_from_params) do |scope|
-          resource_class.with_linking(linked?) do |scope|
+        initial_scope.with_predicate(where_clause_from_params) do |scope|
+          scope.with_linking(linked?) do |scope|
             yield scope
           end
         end
