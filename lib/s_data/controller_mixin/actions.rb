@@ -4,7 +4,7 @@ module SData
   module ControllerMixin
     module Actions
       def sdata_collection
-        collection_scope = SData::Collection::Scope.new(sdata_resource, params, pagination)
+        collection_scope = SData::Collection::Scope.new(sdata_resource, params, target_user,  pagination)
         collection_scope.scope!
         
         collection_feed = SData::Collection::Feed.new(sdata_resource, params, sdata_options[:feed], collection_scope)
