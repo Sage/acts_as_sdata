@@ -5,6 +5,10 @@ module SData
         resource_class.collection(baze_scope.all(*params))
       end
 
+      def all_with_deleted(*params)
+        resource_class.collection(baze_scope.find_with_deleted(:all, *params))
+      end
+
       def with_pagination(pagination, &block)
         yield scoped(:offset => pagination.zero_based_start_index, :limit => pagination.records_to_return)
       end
@@ -35,7 +39,7 @@ module SData
         if linking
           uuid_clause = uuid.nil? ? '' : "uuid = '#{Predicate.strip_quotes(uuid)}' and "
           tablename = resource_class.baze_class_name.tableize
-          with_conditions("#{tablename}.id IN (SELECT bb_model_id FROM sd_uuids WHERE #{uuid_clause}(bb_model_type = '#{baze_class_name}') and (sd_class = '#{sdata_name}'))", &block)
+          with_conditions("#{tablename}.id IN (SELECT bb_model_id FROM sd_uuids WHERE #{uuid_clause}(bb_model_type = '#{resource_class.baze_class.name}') and (sd_class = '#{SData.sdata_name(resource_class)}'))", &block)
         else
           yield self
         end
