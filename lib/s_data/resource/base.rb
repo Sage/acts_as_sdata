@@ -13,9 +13,13 @@ module SData
 
         child.__send__ :include, SData::Traits::VirtualBase
       end
-
+      
       def self.has_sdata_options(options)
         self.sdata_options = options
+      end
+
+      def self.initial_scope(&block)
+        self.baze_class.named_scope(:sdata_scope_for_context, lambda(&block))
       end
 
       include InstanceMethods

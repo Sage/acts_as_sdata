@@ -1,6 +1,36 @@
 require File.join(File.dirname(__FILE__), 'spec_helper')
 
 describe SData::Resource do
+  describe ".initial_scope" do
+    context "given a resource with a baze class" do
+      before :all do
+        class TestModel < ActiveRecord::Base; end
+        class TestResource < SData::Resource::Base
+          self.baze_class = TestModel
+        end
+      end
+
+      context "when .initial_scope is called withing class body" do
+        before :all do
+          TestResource.class_eval do
+            initial_scope do |user|
+              { :conditions => { :created_by_id => user.id } }
+            end
+          end  
+        end
+
+        it "should define a scope named :sdata_scope_for_context in a baze class" do
+          TestModel.should respond_to(:sdata_scope_for_context)
+        end
+
+        it "should pass given block to a scope" do
+          fake_user = stub('user', :id => 1)
+          TestModel.sdata_scope_for_context(fake_user).proxy_options.should == { :conditions => { :created_by_id => 1 } }
+        end
+      end
+    end
+  end
+
   describe "#registered_resources" do
     context "when I inherit couple of classes" do
       before :each do
