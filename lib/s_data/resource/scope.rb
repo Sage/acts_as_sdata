@@ -9,14 +9,20 @@ module SData
         resource_class.collection(baze_scope.find_with_deleted(:all, *params))
       end
 
+      # This just adds activerecord (mysql) pagination to the scope
       def with_pagination(pagination, &block)
         yield scoped(:offset => pagination.zero_based_start_index, :limit => pagination.records_to_return)
       end
 
+      # This calls with_scope on the base class domain object to add
+      # whatever conditions you've passed to the current scope
       def with_conditions(conditions, &block)
         yield scoped(:conditions => conditions)
       end
 
+      # This is used to take predicates from the sdata protocol sent
+      # across the wire and convert them to activerecord find
+      # conditions and yield an activerecord scope withthese conditions
       def with_predicate(raw_predicate, &block)
         if raw_predicate.nil?
           yield self
@@ -34,7 +40,13 @@ module SData
         self.class.new(resource_class, new_scope)
       end
 
-      # TODO: rename bb_model_id and bb_model_type to model_id and model_type
+      # TODO: rename bb_model_id and bb_model_type to model_id and
+      # model_type if the request contains the $linked predicate then
+      # we want to only return records from the collection which have
+      # an entry in the sd_uuids table. (for details see the sdata
+      # spec:
+      # http://interop.sage.com/daisy/sdataSync/LinkAndSync.html)
+      
       def with_linking(linking, uuid=nil, &block)
         if linking
           uuid_clause = uuid.nil? ? '' : "uuid = '#{Predicate.strip_quotes(uuid)}' and "
