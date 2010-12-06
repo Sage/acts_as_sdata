@@ -1,6 +1,10 @@
 module SData
   module Resource
     class Scope < Struct.new(:resource_class, :baze_scope)
+      extend Forwardable
+      
+      def_delegators :baze_scope, :count
+      
       def all(*params)
         resource_class.collection(baze_scope.all(*params))
       end
