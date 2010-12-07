@@ -1,5 +1,5 @@
 module SData
-  module ControllerMixin
+  module Application
     module SDataInstance
 
     protected

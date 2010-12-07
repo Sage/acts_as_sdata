@@ -1,7 +1,7 @@
 require 'nokogiri'
 
 module SData
-  module ControllerMixin
+  module Application
     module Actions
       def sdata_collection
         collection_scope = SData::Collection::Scope.new(sdata_resource, params, target_user,  pagination)
@@ -74,7 +74,7 @@ module SData
         exception.to_s
       end
 
-      include SDataInstance
+      include SData::Application::SDataInstance
     end
   end
 end
