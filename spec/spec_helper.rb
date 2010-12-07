@@ -6,13 +6,13 @@ end
 require 'atom'
 require 'dirge'
 require 'active_record'
+require 'cgi'
 
 setup_active_record
 
 $:.unshift ~'../lib'
 
 require ~'../init'
-
 
 require 'nokogiri'
 require 'factory_girl'
