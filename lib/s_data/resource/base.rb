@@ -1,33 +1,7 @@
-module SData
-  module Resource
-    class Base
-      cattr_accessor :registered_resources
-
-      def self.inherited(child)
-        class << child
-          include ResourceIdentity
-        end
-
-        child.register_resource
-        child.define_own_sdata_options
-
-        child.__send__ :include, SData::Traits::VirtualBase
-      end
-      
-      def self.has_sdata_options(options)
-        self.sdata_options = options
-      end
-
-      def self.initial_scope(&block)
-        self.baze_class.named_scope(:sdata_scope_for_context, lambda(&block))
-      end
-
-      include InstanceMethods
-      include ToAtom
-      extend ClassMethods
-      extend PayloadMap
-      extend Uuid
-      extend Scoping
-    end
-  end
-end
+require ~'base/class_methods'
+require ~'base/to_atom'
+require ~'base/instance_methods'
+require ~'base/resource_identity'
+require ~'base/uuid.rb'
+require ~'base/scoping.rb'
+require ~'base/base.rb'

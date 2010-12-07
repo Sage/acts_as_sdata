@@ -1,0 +1,5 @@
+require ~'atom_extensions/nodes/digest.rb'
+require ~'atom_extensions/nodes/payload.rb'
+require ~'atom_extensions/nodes/sync_state.rb'
+require ~'atom_extensions/content_mixin.rb'
+require ~'atom_extensions/entry_mixin.rb'
