@@ -4,6 +4,8 @@ module SData
       cattr_accessor :registered_resources
 
       def self.inherited(child)
+        raise 'You should derive from SData::Resource::base explicitly in order to provide child class name' if child.name.empty?
+
         class << child
           include ResourceIdentity
         end

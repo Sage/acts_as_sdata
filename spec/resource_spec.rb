@@ -1,6 +1,6 @@
 require File.join(File.dirname(__FILE__), 'spec_helper')
 
-describe SData::Resource do
+describe SData::Resource::Base do
   describe ".initial_scope" do
     context "given a resource with a baze class" do
       before :all do
@@ -65,6 +65,12 @@ describe SData::Resource do
         it "should respond to SData-related class methods" do
           subject.should respond_to(:sdata_resource_kind_url)
         end
+      end
+    end
+
+    context "when I derive from Resource::Base incorrectly" do
+      it "should raise a reasonable error" do
+        lambda { ThisWillNotWork = Class.new(SData::Resource::Base) }.should raise_error('You should derive from SData::Resource::base explicitly in order to provide child class name')
       end
     end
   end
