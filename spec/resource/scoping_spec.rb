@@ -1,27 +1,83 @@
 require File.join(File.dirname(__FILE__), '..', 'spec_helper')
 
-describe SData::Resource::Base, "#scoped" do
-  context "when there is no scoping" do
-    subject { SomeResource }
-    
-    it "should have no additional conditions" do
-      SomeResource.combined_scoping_conditions.should == {}
+describe SData::Resource::Base, "#sdata_scope_for_context" do
+  context "when 'enforce scoping' config option is on" do
+    before do
+      SData.stub! :enforce_scoping? => true
+    end
+      
+    context "when resource has initial sdata scope" do
+      before do
+        remove_constants :TestResource, :BazeModel
+
+        class BazeModel < ActiveRecord::Base; end
+        
+        class TestResource < SData::Resource::Base
+          self.baze_class = BazeModel
+          
+          initial_scope do |target_user|
+            { :conditions => { :owner => target_user } }
+          end
+        end
+      end
+
+      it "should return a well-formed SData resource scope" do
+        TestResource.sdata_scope_for_context(stub).should be_a(SData::Resource::Scope)
+      end
+    end
+
+    context "when resource doesn't have initial sdata scope" do
+      before do
+        remove_constants :TestResource, :BazeModel
+
+        class BazeModel < ActiveRecord::Base; end
+        
+        class TestResource < SData::Resource::Base
+          self.baze_class = BazeModel
+        end
+      end
+
+      it "should raise a error" do
+        lambda { TestResource.sdata_scope_for_context(stub) }.should raise_error
+      end
     end
   end
 
-  context "when there is one scope" do
-    subject { SomeResource.scoped(:conditions => { :field => 'value' }) }
+  context "when 'enforce scoping' config option is off" do
+    context "when resource has initial sdata scope" do
+      before do
+        remove_constants :TestResource, :BazeModel
 
-    it "should have conditions of an applied scope" do
-      SomeResource.combined_scoping_conditions.should == { :conditions => { :field => 'value' }  }
+        class BazeModel < ActiveRecord::Base; end
+        
+        class TestResource < SData::Resource::Base
+          self.baze_class = BazeModel
+          
+          initial_scope do |target_user|
+            { :conditions => { :owner => target_user } }
+          end
+        end
+      end
+
+      it "should return a well-formed SData resource scope" do
+        TestResource.sdata_scope_for_context(stub).should be_a(SData::Resource::Scope)
+      end
     end
-  end
 
-  context "when there are more than one consequtively applied scopes" do
-    subject { SomeResource.scoped(:conditions => { :field => 'value' }).scoped(:limitt => 10) }
+    context "when resource doesn't have initial sdata scope" do
+      before do
+        remove_constants :TestResource, :BazeModel
 
-    it "should have conditions merged from from all applied scopes" do
-      SomeResource.combined_scoping_conditions.should == { :conditions => { :field => 'value' }, :limit => 10 }
+        class BazeModel < ActiveRecord::Base; end
+        
+        class TestResource < SData::Resource::Base
+          self.baze_class = BazeModel
+        end
+      end
+
+      it "should still return a well-formed SData resource scope" do
+        TestResource.sdata_scope_for_context(stub).should be_a(SData::Resource::Scope)
+      end
     end
   end
 end

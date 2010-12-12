@@ -4,7 +4,7 @@ module SData
       def sdata_scope_for_context(target_user)
         if SData.enforce_scoping?
           unless has_sdata_scope?
-            raise SData::Exceptions::VirtualBase::MissingScope.new("#{self.name}: missing sdata_scope_for_context for #{self.baze_class.name}")
+            raise "#{self.name}: missing sdata_scope_for_context for #{self.baze_class.name}"
           end
         end
         
