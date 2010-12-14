@@ -10,7 +10,7 @@ module SData
 
         atom_feed.set_properties(resource_class, resource_url, feed_options)
         
-#        atom_feed.populate_open_search
+        atom_feed.populate_open_search(scope)
  #       atom_feed.build_feed_links
       end
 
@@ -108,10 +108,10 @@ module SData
           end
         end
 
-        def populate_open_search
-          self[SData.config[:schemas]['opensearch'], 'totalResults'] << @total_results
-          self[SData.config[:schemas]['opensearch'], 'startIndex'] << one_based_start_index
-          self[SData.config[:schemas]['opensearch'], 'itemsPerPage'] << records_to_return
+        def populate_open_search(scope)
+          self[SData.config[:schemas]['opensearch'], 'totalResults'] << scope.entry_count
+          self[SData.config[:schemas]['opensearch'], 'startIndex'] << scope.pagination.one_based_start_index
+          self[SData.config[:schemas]['opensearch'], 'itemsPerPage'] << scope.pagination.records_to_return
         end
 
         def category_term
