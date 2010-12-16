@@ -9,8 +9,8 @@ module SData
 
       def scope!
         with_paginated_sdata_scope do |scope|
-          self.entry_count = scope.count
           self.entries = linked? ? scope.all_with_deleted : scope.all
+          self.entry_count = self.entries.count
         end
       end
 
