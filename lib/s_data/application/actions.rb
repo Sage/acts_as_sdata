@@ -4,10 +4,9 @@ module SData
   module Application
     module Actions
       def sdata_collection
-        collection_scope = SData::Collection::Scope.new(sdata_resource, params, target_user,  pagination)
-        collection_scope.scope!
-        
-        collection_feed = SData::Collection::Feed.new(sdata_resource, params, sdata_options[:feed], collection_scope)
+        query_params = request.env["rack.request.query_hash"]
+
+        collection_feed = SData::Collection::Feed.new(sdata_resource, params, sdata_options[:feed], collection_scope, pagination, query_params)
 
         content_type 'application/atom+xml; type=feed'
         collection_feed.to_xml
@@ -43,11 +42,17 @@ module SData
 
       protected
 
+      def collection_scope
+        @collection_scope ||=
+          SData::Collection::Scope.new(sdata_resource, params, target_user, pagination).tap { |scope| scope.scope! }
+      end
+
       def pagination
-        SData::Collection::Pagination.new(sdata_options[:feed][:default_items_per_page],
-                                          sdata_options[:feed][:maximum_items_per_page],
-                                          params[:startIndex].to_i,
-                                          params[:count].to_i)
+        @pagination ||= SData::Collection::Pagination.new(sdata_options[:feed][:default_items_per_page],
+                                                          sdata_options[:feed][:maximum
+                                                                               _items_per_page],
+                                                          params[:startIndex].to_i,
+                                                          params[:count].to_i)
       end
 
       def assert_access_to(instance)

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 module SData
   class Collection
-    class Feed < Struct.new(:resource_class, :params, :feed_options, :scope)
+    class Feed < Struct.new(:resource_class, :params, :feed_options, :scope, :pagination, :query_params)
       def initialize(*args)
         super(*args)
 
@@ -10,8 +10,8 @@ module SData
 
         atom_feed.set_properties(resource_class, resource_url, feed_options)
         
-        atom_feed.populate_open_search(scope)
- #       atom_feed.build_feed_links
+        atom_feed.populate_open_search(scope, pagination)
+        atom_feed.build_feed_links(params, query_params, scope, pagination)
       end
 
       def to_xml
@@ -74,44 +74,51 @@ module SData
           ApplicationDiagnosis.new(:exception => exception).to_xml(:feed)
         end
 
-        def build_feed_links
+        def build_feed_links(params, query_params, scope, pagination)
+          dataset = params[:dataset]
+          resource_url = resource_class.sdata_resource_kind_url(dataset)
+          total_results = scope.entry_count
+          records_to_return = pagination.records_to_return
+          one_based_start_index = pagination.one_based_start_index
+          zero_based_start_index = pagination.zero_based_start_index
+          
           self.links << Atom::Link.new(
                                        :rel => 'self',
-                                       :href => (resource_url + "?#{request.params.to_param}".chomp('?')),
+                                       :href => (resource_url + "?#{query_params.to_param}".chomp('?')),
                                        :type => 'application/atom+xml; type=feed',
                                        :title => 'Refresh')
-          if (records_to_return > 0) && (@total_results > records_to_return)
+          if (records_to_return > 0) && (total_results > records_to_return)
             self.links << Atom::Link.new(
                                          :rel => 'first',
-                                         :href => (resource_url + "?#{request.params.merge(:startIndex => '1').to_param}"),
+                                         :href => (resource_url + "?#{query_params.merge(:startIndex => '1').to_param}"),
                                          :type => 'application/atom+xml; type=feed',
                                          :title => 'First Page')
             self.links << Atom::Link.new(
                                          :rel => 'last',
-                                         :href => (resource_url + "?#{request.params.merge(:startIndex => [1,(@last=(((@total_results-zero_based_start_index - 1) / records_to_return * records_to_return) + zero_based_start_index + 1))].max).to_param}"),
+                                         :href => (resource_url + "?#{query_params.merge(:startIndex => [1,(@last=(((total_results-zero_based_start_index - 1) / records_to_return * records_to_return) + zero_based_start_index + 1))].max).to_param}"),
                                          :type => 'application/atom+xml; type=feed',
                                          :title => 'Last Page')
-            if (one_based_start_index+records_to_return) <= @total_results
+            if (one_based_start_index+records_to_return) <= total_results
               self.links << Atom::Link.new(
                                            :rel => 'next',
-                                           :href => (resource_url + "?#{request.params.merge(:startIndex => [1,[@last, (one_based_start_index+records_to_return)].min].max.to_s).to_param}"),
+                                           :href => (resource_url + "?#{query_params.merge(:startIndex => [1,[@last, (one_based_start_index+records_to_return)].min].max.to_s).to_param}"),
                                            :type => 'application/atom+xml; type=feed',
                                            :title => 'Next Page')
             end
             if (one_based_start_index > 1)
               self.links << Atom::Link.new(
                                            :rel => 'previous',
-                                           :href => (resource_url + "?#{request.params.merge(:startIndex => [1,[@last, (one_based_start_index-records_to_return)].min].max.to_s).to_param}"),
+                                           :href => (resource_url + "?#{query_params.merge(:startIndex => [1,[@last, (one_based_start_index-records_to_return)].min].max.to_s).to_param}"),
                                            :type => 'application/atom+xml; type=feed',
                                            :title => 'Previous Page')
             end
           end
         end
 
-        def populate_open_search(scope)
+        def populate_open_search(scope, pagination)
           self[SData.config[:schemas]['opensearch'], 'totalResults'] << scope.entry_count
-          self[SData.config[:schemas]['opensearch'], 'startIndex'] << scope.pagination.one_based_start_index
-          self[SData.config[:schemas]['opensearch'], 'itemsPerPage'] << scope.pagination.records_to_return
+          self[SData.config[:schemas]['opensearch'], 'startIndex'] << pagination.one_based_start_index
+          self[SData.config[:schemas]['opensearch'], 'itemsPerPage'] << pagination.records_to_return
         end
 
         def category_term
