@@ -1,4 +1,5 @@
-require ~'application/s_data_instance.rb'
+require ~'application/instance.rb'
+require ~'application/collection.rb'
 require ~'application/actions.rb'
 require ~'application/old_dsl_support'
 require ~'application/resource_from_params'

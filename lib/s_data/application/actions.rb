@@ -4,12 +4,10 @@ module SData
   module Application
     module Actions
       def sdata_collection
-        query_params = request.env["rack.request.query_hash"]
-
-        collection_feed = SData::Collection::Feed.new(sdata_resource, params, sdata_options[:feed], collection_scope, pagination, query_params)
+        collection_feed = SData::Collection::Feed.new(sdata_resource, sdata_options[:feed], collection_scope, collection_url, pagination, feed_links)
 
         content_type 'application/atom+xml; type=feed'
-        collection_feed.to_xml
+        collection_feed.to_xml(params)
       end
 
       def sdata_show_instance
@@ -41,20 +39,6 @@ module SData
       end
 
       protected
-
-      def collection_scope
-        @collection_scope ||=
-          SData::Collection::Scope.new(sdata_resource, params, target_user, pagination).tap { |scope| scope.scope! }
-      end
-
-      def pagination
-        @pagination ||= SData::Collection::Pagination.new(sdata_options[:feed][:default_items_per_page],
-                                                          sdata_options[:feed][:maximum
-                                                                               _items_per_page],
-                                                          params[:startIndex].to_i,
-                                                          params[:count].to_i)
-      end
-
       def assert_access_to(instance)
         raise "Unauthenticated" unless logged_in?
         # Not returning Access Denied on purpose so that users cannot fish for existence of emails or other data.
@@ -79,7 +63,8 @@ module SData
         exception.to_s
       end
 
-      include SData::Application::SDataInstance
+      include SData::Application::Actions::Instance
+      include SData::Application::Actions::Collection
     end
   end
 end
