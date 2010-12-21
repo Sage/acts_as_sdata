@@ -3,7 +3,7 @@ module SData
     class Scope < Struct.new(:resource_class, :baze_scope)
       extend Forwardable
       
-      def_delegators :baze_scope, :count
+      def_delegators :baze_scope, :count, :count_with_deleted
       
       def all(*params)
         resource_class.collection(baze_scope.all(*params))
@@ -14,8 +14,8 @@ module SData
       end
 
       # This just adds activerecord (mysql) pagination to the scope
-      def with_pagination(pagination, &block)
-        yield scoped(:offset => pagination.zero_based_start_index, :limit => pagination.records_to_return)
+      def with_pagination(pagination)
+        scoped(:offset => pagination.zero_based_start_index, :limit => pagination.records_to_return)
       end
 
       # This calls with_scope on the base class domain object to add
