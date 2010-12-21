@@ -20,19 +20,19 @@ module SData
 
       # This calls with_scope on the base class domain object to add
       # whatever conditions you've passed to the current scope
-      def with_conditions(conditions, &block)
-        yield scoped(:conditions => conditions)
+      def with_conditions(conditions)
+        scoped(:conditions => conditions)
       end
 
       # This is used to take predicates from the sdata protocol sent
       # across the wire and convert them to activerecord find
       # conditions and yield an activerecord scope withthese conditions
-      def with_predicate(raw_predicate, &block)
+      def with_predicate(raw_predicate)
         if raw_predicate.nil?
-          yield self
+          self
         else
           predicate = SData::Predicate.parse(resource_class.payload_map.baze_fields, raw_predicate)
-          with_conditions(predicate.to_conditions, &block)
+          with_conditions(predicate.to_conditions)
         end
       end
 
@@ -51,13 +51,13 @@ module SData
       # spec:
       # http://interop.sage.com/daisy/sdataSync/LinkAndSync.html)
       
-      def with_linking(linking, uuid=nil, &block)
+      def with_linking(linking, uuid=nil)
         if linking
           uuid_clause = uuid.nil? ? '' : "uuid = '#{Predicate.strip_quotes(uuid)}' and "
           tablename = resource_class.baze_class_name.tableize
-          with_conditions("#{tablename}.id IN (SELECT bb_model_id FROM sd_uuids WHERE #{uuid_clause}(bb_model_type = '#{resource_class.baze_class.name}') and (sd_class = '#{SData.sdata_name(resource_class)}'))", &block)
+          with_conditions("#{tablename}.id IN (SELECT bb_model_id FROM sd_uuids WHERE #{uuid_clause}(bb_model_type = '#{resource_class.baze_class.name}') and (sd_class = '#{SData.sdata_name(resource_class)}'))")
         else
-          yield self
+          self
         end
       end
     end
