@@ -8,9 +8,9 @@ module SData
       end
 
       def scope!
-        with_paginated_sdata_scope do |scope|
-          self.entries = linked? ? scope.all_with_deleted : scope.all
-          self.entry_count = self.entries.count
+        with_sdata_scope do |scope|
+          self.entry_count = scope.count
+          self.entries = linked? ? scope.with_pagination(pagination).all_with_deleted : scope.with_pagination(pagination).all
         end
       end
 
@@ -23,14 +23,6 @@ module SData
         # RADAR: this assumes only one clause, and does no error checking
         expression = params.detect{|k,v|  v.nil? && k.is_a?(String) && k[0...6] == 'where '}
         expression.nil? ? nil : expression.first
-      end
-
-      def with_paginated_sdata_scope #:yields: scoped_model_class
-        with_sdata_scope do |scope|
-          scope.with_pagination(pagination) do |scope|
-            yield scope
-          end
-        end
       end
 
       def initial_scope
