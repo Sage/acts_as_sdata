@@ -17,8 +17,7 @@ module SData
         end
         
         def collection_scope
-          @collection_scope ||=
-            SData::Collection::Scope.new(sdata_resource, params, target_user, pagination).tap { |scope| scope.scope! }
+          @collection_scope ||= SData::Collection::Scope.new(sdata_resource, params, target_user, pagination).tap { |scope| scope.scope! }
         end
 
         def pagination

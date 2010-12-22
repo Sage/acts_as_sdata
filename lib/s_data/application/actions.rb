@@ -4,7 +4,8 @@ module SData
   module Application
     module Actions
       def sdata_collection
-        collection_feed = SData::Collection::Feed.new(sdata_resource, sdata_options[:feed], collection_scope, collection_url, pagination, feed_links)
+        entries = SData::Collection::Entries.new(collection_scope)
+        collection_feed = SData::Collection::Feed.new(sdata_resource, sdata_options[:feed], entries, collection_url, pagination, feed_links)
 
         content_type 'application/atom+xml; type=feed'
         collection_feed.to_xml(params)

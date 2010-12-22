@@ -1,17 +1,20 @@
 # -*- coding: utf-8 -*-
 module SData
   class Collection
-    class Feed < Struct.new(:resource_class, :feed_options, :scope, :collection_url, :pagination, :links)
+    class Feed < Struct.new(:resource_class, :feed_options, :entries, :collection_url, :pagination, :links)
+      attr_accessor :atom_feed
+      
       def initialize(*args)
         super(*args)
         build_atom_feed
+
+        atom_feed.set_properties(resource_class, collection_url, feed_options)
+        atom_feed.populate_open_search(entries.count, pagination)
+        atom_feed.add_links(links)
+        atom_feed.assign_entries(entries, params)
       end
 
-      def to_xml(params)
-        atom_feed.set_properties(resource_class, collection_url, feed_options)
-        atom_feed.populate_open_search(scope, pagination)
-        atom_feed.add_links(links)
-        atom_feed.assign_entries(scope.entries, params)
+      def to_xml
         atom_feed.to_xml
       end
 
@@ -30,7 +33,6 @@ module SData
         
         def set_properties(resource_class, collection_url, options)
           self.resource_class = resource_class
-          
           self.title = options[:title]
           self.updated = Time.now
           self.authors << Atom::Person.new(:name => options[:author])
@@ -40,22 +42,14 @@ module SData
                                                 :label  => category_term.underscore.humanize.titleize)
         end
 
-        def assign_entries(entries, params)
+        def assign_entries(entries)
           entries.each do |entry|
-            begin
-              add_entry(entry, params)
-            rescue Exception => exception
-              add_error(exception)
-            end
+            self.entries << entry
           end
-        end
 
-        def add_entry(entry, params)
-          self.entries << entry.to_atom(params)
-        end    
-
-        def add_error(exception)
-          self[SData.config[:schemas]['sdata'], 'diagnosis'] << compose_diagnosis(exception)
+          entries.diagnoses.each do |diagnosis|
+            self[SData.config[:schemas]['sdata'], 'diagnosis'] << diagnosis
+          end          
         end
 
         def compose_diagnosis(exception)
@@ -76,10 +70,6 @@ module SData
           resource_class.name.demodulize.camelize(:lower).pluralize
         end
       end
-
-      protected
-
-      attr_accessor :atom_feed
     end
   end
 end
