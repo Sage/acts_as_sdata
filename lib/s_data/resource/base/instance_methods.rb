@@ -52,12 +52,6 @@ module SData
       def default_entry_content
         self.class.name
       end
-      
-      # Thought about passing query_params from controller so wouldn't need this, but it causes other problems
-      # (dataset needs to be passed)
-      def clean_params(params)
-        params.stringify_keys.reject{|key,value|['action','controller','instance_id','dataset'].include?(key)}
-      end
     end
   end
 end
