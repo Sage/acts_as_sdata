@@ -1,22 +1,23 @@
 module SData
   class Collection
     class Scope < Struct.new(:resource_class, :params, :target_user, :pagination)
-      attr_reader :entry_count, :entries
+      attr_reader :resource_count, :resources
 
+      # grrrr
       def linked?
         params[:condition] == "$linked"
       end
 
       def scope!
         with_sdata_scope do |scope|
-          self.entry_count = linked? ? scope.count_with_deleted : scope.count
-          self.entries = linked? ? scope.with_pagination(pagination).all_with_deleted : scope.with_pagination(pagination).all
+          self.resource_count = linked? ? scope.count_with_deleted : scope.count
+          self.resources = linked? ? scope.with_pagination(pagination).all_with_deleted : scope.with_pagination(pagination).all
         end
       end
 
       protected
 
-      attr_writer :entry_count, :entries
+      attr_writer :resource_count, :resources
 
       def where_clause_from_params
         # this implementation is 3-4 times faster than previous one

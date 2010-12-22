@@ -11,7 +11,7 @@ module SData
         atom_feed.set_properties(resource_class, collection_url, feed_options)
         atom_feed.populate_open_search(entries.count, pagination)
         atom_feed.add_links(links)
-        atom_feed.assign_entries(entries, params)
+        atom_feed.assign_entries(entries)
       end
 
       def to_xml
@@ -56,8 +56,8 @@ module SData
           self.links << links.atom_links
         end
 
-        def populate_open_search(scope, pagination)
-          self[SData.config[:schemas]['opensearch'], 'totalResults'] << scope.entry_count
+        def populate_open_search(total_results, pagination)
+          self[SData.config[:schemas]['opensearch'], 'totalResults'] << total_results
           self[SData.config[:schemas]['opensearch'], 'startIndex'] << pagination.one_based_start_index
           self[SData.config[:schemas]['opensearch'], 'itemsPerPage'] << pagination.records_to_return
         end

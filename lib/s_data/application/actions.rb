@@ -4,11 +4,11 @@ module SData
   module Application
     module Actions
       def sdata_collection
-        entries = SData::Collection::Entries.new(collection_scope)
+        entries = SData::Collection::Entries.new(collection_scope, params, query_params, {})
         collection_feed = SData::Collection::Feed.new(sdata_resource, sdata_options[:feed], entries, collection_url, pagination, feed_links)
 
         content_type 'application/atom+xml; type=feed'
-        collection_feed.to_xml(params)
+        collection_feed.to_xml
       end
 
       def sdata_show_instance
@@ -40,6 +40,7 @@ module SData
       end
 
       protected
+      
       def assert_access_to(instance)
         raise "Unauthenticated" unless logged_in?
         # Not returning Access Denied on purpose so that users cannot fish for existence of emails or other data.
