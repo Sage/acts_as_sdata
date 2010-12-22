@@ -52,10 +52,6 @@ module SData
           end          
         end
 
-        def compose_diagnosis(exception)
-          ApplicationDiagnosis.new(:exception => exception).to_xml(:feed)
-        end
-
         def add_links(links)
           self.links << links.atom_links
         end
