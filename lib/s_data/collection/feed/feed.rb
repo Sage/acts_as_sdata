@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 module SData
   class Collection
-    class Feed < Struct.new(:resource_class, :feed_options, :entries, :collection_url, :pagination, :links)
+    class Feed < Struct.new(:resource_class, :feed_options, :scope, :collection_url, :pagination, :links)
       attr_accessor :atom_feed
       
       def initialize(*args)
@@ -9,9 +9,9 @@ module SData
         build_atom_feed
 
         atom_feed.set_properties(resource_class, collection_url, feed_options)
-        atom_feed.populate_open_search(entries.count, pagination)
+        atom_feed.populate_open_search(scope.resource_count, pagination)
         atom_feed.add_links(links)
-        atom_feed.assign_entries(entries)
+        atom_feed.assign_entries(scope)
       end
 
       def to_xml
@@ -42,14 +42,15 @@ module SData
                                                 :label  => category_term.underscore.humanize.titleize)
         end
 
-        def assign_entries(entries)
-          entries.each do |entry|
-            self.entries << entry
+        def assign_entries(scope)
+          scope.resources.each do |resource|
+            entry = SData::Collection::Entry.new(resource, context)
+            unless entry.diagnosis?
+              self.entries << entry
+            else
+              self[SData.config[:schemas]['sdata'], 'diagnosis'] << diagnosis
+            end
           end
-
-          entries.diagnoses.each do |diagnosis|
-            self[SData.config[:schemas]['sdata'], 'diagnosis'] << diagnosis
-          end          
         end
 
         def add_links(links)
@@ -62,6 +63,7 @@ module SData
           self[SData.config[:schemas]['opensearch'], 'itemsPerPage'] << pagination.records_to_return
         end
 
+        # grrr
         def category_term
           resource_class.name.demodulize.camelize(:lower).pluralize
         end

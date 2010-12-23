@@ -4,8 +4,7 @@ module SData
   module Application
     module Actions
       def sdata_collection
-        entries = SData::Collection::Entries.new(collection_scope, params, query_params, {})
-        collection_feed = SData::Collection::Feed.new(sdata_resource, sdata_options[:feed], entries, collection_url, pagination, feed_links)
+        collection_feed = SData::Collection::Feed.new(sdata_resource, sdata_options[:feed], collection_scope, collection_url, pagination, feed_links)
 
         content_type 'application/atom+xml; type=feed'
         collection_feed.to_xml
@@ -14,8 +13,10 @@ module SData
       def sdata_show_instance
         instance = sdata_instance
         assert_access_to instance
+        entry = SData::Collection::Entry.new(instance, context)
+        
         content_type "application/atom+xml; type=entry"
-        instance.to_atom(params).to_xml
+        entry.to_xml
       end
 
       def sdata_create_instance
