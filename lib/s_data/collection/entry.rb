@@ -1,28 +1,32 @@
 module SData
   module Collection
-    class Entries < Struct.new(:scope, :params, :query_params, :options)
-      attr_accessor :entries, :diagnoses, :count
+    class Entry < Struct.new(:resource, :context, :options)
+      attr_accessor :diagnosis
+      attr_accessor :atom_entry
 
       def initialize(*args)
         super(*args)
 
-        self.entries = []
-        self.diagnoses = []
-        self.count = scope.count
+        self.diagnosis = false
         self.options = {
           :atom_show_categories => true,
           :atom_show_links => true,
           :atom_show_authors => true
         }.merge(options)
 
-        scope.resources.each do |resource|
-          begin
-            self.entries << compose_atom_entry(resource)
-          rescue Exception => exception
-            self.diagnoses << compose_diagnosis(exception)
-          end
+        begin
+          self.atom_entry = compose_atom_entry(resource)
+        rescue Exception => exception
+          self.diagnosis = true
+          self.atom_entry = compose_diagnosis(exception)
         end
       end
+
+      def to_xml
+        entry.to_xml
+      end
+
+      alias_method :diagnosis?, :diagnosis
 
       protected
 
@@ -36,30 +40,6 @@ module SData
 
       def show_authors?
         options[:show_authors]
-      end
-
-      def sync?
-        params[:sync].to_s == 'true'
-      end
-
-      def dataset
-        params[:dataset]
-      end
-
-      def selected
-        params[:select].to_s.split(',')
-      end
-
-      def included
-        params[:include].to_s.split(',')
-      end
-
-      def maximum_precedence
-        params[:precedence].blank? ? params[:precedence].to_i : 100
-      end
-
-      def expand?
-        (sync || included.include?('$children')) ? :all_children : :immediate_children
       end
 
       def base_url
