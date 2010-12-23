@@ -8,9 +8,9 @@ module SData
         super(*args)
         build_atom_feed
 
-        atom_feed.set_properties(resource_class, resource_class.collection_url(context), resource_class.sdata_options[:feed])
+        atom_feed.set_properties(category_term, collection_url, feed_options)
         atom_feed.populate_open_search(scope.resource_count, pagination)
-        atom_feed.add_links(links)
+        atom_feed.links << links
         atom_feed.assign_entries(scope)
       end
 
@@ -28,11 +28,20 @@ module SData
         end
       end
 
+      def category_term
+        resource_class.name.demodulize.camelize(:lower).pluralize
+      end
+
+      def collection_url
+        resource_class.collection_url(context)
+      end
+
+      def feed_options
+        resource_class.sdata_options[:feed]
+      end
+
       module AtomFeedExtensions
-        attr_accessor :resource_class
-        
-        def set_properties(resource_class, collection_url, options)
-          self.resource_class = resource_class
+        def set_properties(category_term, collection_url, options)
           self.title = options[:title]
           self.updated = Time.now
           self.authors << Atom::Person.new(:name => options[:author])
@@ -53,19 +62,10 @@ module SData
           end
         end
 
-        def add_links(links)
-          self.links << links.atom_links
-        end
-
         def populate_open_search(total_results, pagination)
           self[SData.config[:schemas]['opensearch'], 'totalResults'] << total_results
           self[SData.config[:schemas]['opensearch'], 'startIndex'] << pagination.one_based_start_index
           self[SData.config[:schemas]['opensearch'], 'itemsPerPage'] << pagination.records_to_return
-        end
-
-        # grrr
-        def category_term
-          resource_class.name.demodulize.camelize(:lower).pluralize
         end
       end
     end
