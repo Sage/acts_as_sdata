@@ -6,7 +6,7 @@ module SData
       def scope!
         with_sdata_scope do |scope|
           self.resource_count = context.linked? ? scope.count_with_deleted : scope.count
-          self.resources = linked? ? scope.with_pagination(pagination).all_with_deleted : scope.with_pagination(pagination).all
+          self.resources = context.linked? ? scope.with_pagination(pagination).all_with_deleted : scope.with_pagination(pagination).all
         end
       end
 
@@ -17,7 +17,7 @@ module SData
       def where_clause_from_params
         # this implementation is 3-4 times faster than previous one
         # RADAR: this assumes only one clause, and does no error checking
-        expression = params.detect{|k,v|  v.nil? && k.is_a?(String) && k[0...6] == 'where '}
+        expression = context.params.detect{|k,v|  v.nil? && k.is_a?(String) && k[0...6] == 'where '}
         expression.nil? ? nil : expression.first
       end
 
@@ -34,7 +34,7 @@ module SData
       #     named_scope :sdata_scope_for_context, 
       #                 lambda{|context| {:conditions =>{:user_id => context.current_user}}}
       def with_sdata_scope #:yields: scoped_resource_class
-        yield initial_scope.with_predicate(where_clause_from_params).with_linking(linked?)
+        yield initial_scope.with_predicate(where_clause_from_params).with_linking(context.linked?)
       end
     end
   end  

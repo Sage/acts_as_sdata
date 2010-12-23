@@ -16,7 +16,7 @@ module SData
         end
 
         def feed_links
-          @feed_links ||= SData::Collection::Links.new(collection_url, pagination, context)
+          @feed_links ||= SData::Collection::Links.new(sdata_resource.collection_url(context), pagination, context)
         end
       end
     end

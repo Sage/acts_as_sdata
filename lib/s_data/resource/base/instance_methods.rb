@@ -52,6 +52,10 @@ module SData
       def default_entry_content
         self.class.name
       end
+
+      def instance_url(context)
+        "#{self.sdata_resource_url(dataset)}?#{query_params.to_param}"
+      end
     end
   end
 end

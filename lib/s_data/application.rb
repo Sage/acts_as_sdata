@@ -1,7 +1,7 @@
 require ~'application/instance.rb'
 require ~'application/collection.rb'
 require ~'application/actions.rb'
-require ~'application/old_dsl_support'
+require ~'application/context'
 require ~'application/resource_from_params'
 require ~'application/atom_entry_recognition'
 require ~'application/auth'

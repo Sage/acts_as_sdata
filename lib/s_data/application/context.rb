@@ -24,6 +24,10 @@ module SData
       def expand?
         (sync || included.include?('$children')) ? :all_children : :immediate_children
       end
+
+      def linked?
+        params[:condition] == "$linked"
+      end
     end
   end
 end

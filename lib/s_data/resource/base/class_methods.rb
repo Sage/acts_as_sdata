@@ -26,6 +26,10 @@ module SData
       def sdata_date(date_time)
         SData::Formatting.format_date_time(date_time)
       end
+
+      def collection_url(context)
+        "#{sdata_resource_kind_url(context.dataset)}?#{context.query_params.to_param}"
+      end
     end
   end
 end

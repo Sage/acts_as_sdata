@@ -1,6 +1,6 @@
 require ~'collection/pagination'
 require ~'collection/collection'
-require ~'collection/entries'
+require ~'collection/entry'
 require ~'collection/feed'
 require ~'collection/links'
 require ~'collection/scope'

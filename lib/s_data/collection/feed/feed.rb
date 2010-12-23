@@ -11,7 +11,7 @@ module SData
         atom_feed.set_properties(category_term, collection_url, feed_options)
         atom_feed.populate_open_search(scope.resource_count, pagination)
         atom_feed.links << links
-        atom_feed.assign_entries(scope)
+        atom_feed.assign_entries(scope, context)
       end
 
       def to_xml
@@ -51,13 +51,13 @@ module SData
                                                 :label  => category_term.underscore.humanize.titleize)
         end
 
-        def assign_entries(scope)
+        def assign_entries(scope, context)
           scope.resources.each do |resource|
             entry = SData::Collection::Entry.new(resource, context)
             unless entry.diagnosis?
               self.entries << entry
             else
-              self[SData.config[:schemas]['sdata'], 'diagnosis'] << diagnosis
+              self[SData.config[:schemas]['sdata'], 'diagnosis'] << entry
             end
           end
         end

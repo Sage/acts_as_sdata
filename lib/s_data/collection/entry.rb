@@ -1,5 +1,5 @@
 module SData
-  module Collection
+  class Collection
     class Entry < Struct.new(:resource, :context, :options)
       attr_accessor :diagnosis
       attr_accessor :atom_entry
@@ -12,7 +12,7 @@ module SData
           :atom_show_categories => true,
           :atom_show_links => true,
           :atom_show_authors => true
-        }.merge(options)
+        }.merge(options || {})
 
         begin
           self.atom_entry = compose_atom_entry(resource)
@@ -42,28 +42,20 @@ module SData
         options[:show_authors]
       end
 
-      def base_url
-        self.sdata_resource_url(dataset)
-      end
-
-      def current_url
-        base_url + "?#{query_params.to_param}"
-      end
-
       def compose_diagnosis(exception)
         ApplicationDiagnosis.new(:exception => exception).to_xml(:feed)
       end
 
       def compose_atom_entry(resource)
         Atom::Entry.new.tap do |entry|
-          entry.id = base_url
+          entry.id = resource.instance_url(context)
           entry.title = resource.entry_title
           entry.updated = resource.class.sdata_date(resource.updated_at)
           
           entry.authors << Atom::Person.new(:name => resource.respond_to?('author') ? resource.author : resource.sdata_default_author) if show_authors?
           
           entry.links << Atom::Link.new(:rel => 'self', 
-                                        :href => current_url,
+                                        :href => resource.instance_url(context),
                                         :type => 'application/atom+xml; type=entry', 
                                         :title => 'Refresh') if show_links?
           
