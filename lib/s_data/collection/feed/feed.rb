@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 module SData
   class Collection
-    class Feed < Struct.new(:resource_class, :feed_options, :scope, :collection_url, :pagination, :links)
+    class Feed < Struct.new(:resource_class, :scope, :pagination, :links, :context)
       attr_accessor :atom_feed
-      
+
       def initialize(*args)
         super(*args)
         build_atom_feed
 
-        atom_feed.set_properties(resource_class, collection_url, feed_options)
+        atom_feed.set_properties(resource_class, resource_class.collection_url(context), resource_class.sdata_options[:feed])
         atom_feed.populate_open_search(scope.resource_count, pagination)
         atom_feed.add_links(links)
         atom_feed.assign_entries(scope)
