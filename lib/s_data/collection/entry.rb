@@ -22,10 +22,6 @@ module SData
         end
       end
 
-      def to_xml
-        entry.to_xml
-      end
-
       alias_method :diagnosis?, :diagnosis
 
       protected
@@ -47,7 +43,7 @@ module SData
       end
 
       def compose_atom_entry(resource)
-        Atom::Entry.new.tap do |entry|
+        Atom::Entry.new do |entry|
           entry.id = resource.instance_url(context)
           entry.title = resource.entry_title
           entry.updated = resource.class.sdata_date(resource.updated_at)
@@ -63,7 +59,7 @@ module SData
                                                  :term   => resource.sdata_node_name,
                                                  :label  => resource.sdata_node_name.underscore.humanize.titleize) if show_categories?
           
-          if maximum_precedence > 0
+          if context.maximum_precedence > 0
             begin
               payload = Payload.new(:included => included?, 
                                     :selected => selected?, 

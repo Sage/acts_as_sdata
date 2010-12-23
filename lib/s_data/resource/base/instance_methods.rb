@@ -24,6 +24,15 @@ module SData
       def sdata_options
         self.class.sdata_options
       end
+
+      def instance_url(context)
+        "#{self.sdata_resource_url(context.dataset)}?#{context.query_params.to_param}"
+      end
+
+      def entry_title
+        title_proc = self.sdata_options[:title]
+        title_proc ? instance_eval(&title_proc) : default_entity_title
+      end
       
       protected
 
@@ -33,11 +42,6 @@ module SData
       
       def sdata_default_author
         "Billing Boss"
-      end
-
-      def entry_title
-        title_proc = self.sdata_options[:title]
-        title_proc ? instance_eval(&title_proc) : default_entity_title
       end
 
       def default_entity_title
@@ -51,10 +55,6 @@ module SData
       
       def default_entry_content
         self.class.name
-      end
-
-      def instance_url(context)
-        "#{self.sdata_resource_url(dataset)}?#{query_params.to_param}"
       end
     end
   end

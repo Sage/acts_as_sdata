@@ -55,9 +55,9 @@ module SData
           scope.resources.each do |resource|
             entry = SData::Collection::Entry.new(resource, context)
             unless entry.diagnosis?
-              self.entries << entry
+              self.entries << entry.atom_entry
             else
-              self[SData.config[:schemas]['sdata'], 'diagnosis'] << entry
+              self[SData.config[:schemas]['sdata'], 'diagnosis'] << entry.atom_entry
             end
           end
         end
