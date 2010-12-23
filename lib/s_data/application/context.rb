@@ -18,11 +18,11 @@ module SData
       end
 
       def maximum_precedence
-        params[:precedence].blank? ? params[:precedence].to_i : 100
+        params[:precedence].blank? ? 100 : params[:precedence].to_i
       end
 
       def expand?
-        (sync || included.include?('$children')) ? :all_children : :immediate_children
+        (sync? || included.include?('$children')) ? :all_children : :immediate_children
       end
 
       def linked?

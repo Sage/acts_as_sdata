@@ -58,17 +58,17 @@ module SData
           entry.categories << Atom::Category.new(:scheme => 'http://schemas.sage.com/sdata/categories',
                                                  :term   => resource.sdata_node_name,
                                                  :label  => resource.sdata_node_name.underscore.humanize.titleize) if show_categories?
-          
+
           if context.maximum_precedence > 0
             begin
-              payload = Payload.new(:included => included?, 
-                                    :selected => selected?, 
-                                    :maximum_precedence => maximum_precedence,
-                                    :sync => sync?,
+              payload = Payload.new(:included => context.included,
+                                    :selected => context.selected, 
+                                    :maximum_precedence => context.maximum_precedence,
+                                    :sync => context.sync?,
                                     :contract => resource.sdata_contract_name,
                                     :entity => resource,
-                                    :expand => expand?,
-                                    :dataset => dataset)
+                                    :expand => context.expand?,
+                                    :dataset => context.dataset)
               payload.generate!
               entry.sdata_payload = payload
             rescue Exception => e

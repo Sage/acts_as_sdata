@@ -33,12 +33,12 @@ module SData
         title_proc = self.sdata_options[:title]
         title_proc ? instance_eval(&title_proc) : default_entity_title
       end
-      
-      protected
 
       def sdata_contract_name
         self.class.sdata_contract_name
       end
+      
+      protected
       
       def sdata_default_author
         "Billing Boss"
