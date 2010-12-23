@@ -13,10 +13,9 @@ module SData
       def sdata_show_instance
         instance = sdata_instance
         assert_access_to instance
-        atom_entry = SData::Collection::Entry.new(instance, context)
-        
+
         content_type "application/atom+xml; type=entry"
-        atom_entry.to_xml
+        instance.to_atom(context).to_xml
       end
 
       def sdata_create_instance
@@ -35,9 +34,10 @@ module SData
         instance = sdata_resource.find(id)
         assert_access_to instance
         instance.create_or_update_uuid! uuid
+        
         content_type "application/atom+xml; type=entry"
         status 201
-        instance.to_atom(params).to_xml
+        instance.to_atom(context).to_xml
       end
 
       protected

@@ -26,7 +26,7 @@ module SData
       end
 
       def instance_url(context)
-        "#{self.sdata_resource_url(context.dataset)}?#{context.query_params.to_param}"
+        self.sdata_resource_url(context.dataset)
       end
 
       def entry_title
@@ -36,6 +36,10 @@ module SData
 
       def sdata_contract_name
         self.class.sdata_contract_name
+      end
+
+      def to_atom(context)
+        SData::Collection::Entry.new(self, context).atom_entry
       end
       
       protected
