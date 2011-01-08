@@ -3,6 +3,14 @@ class Customer < ModelBase
   attr_accessor :id
 
   attr_writer :created_by, :name, :number, :contacts, :created_at, :updated_at, :address
+
+  has_sdata_options :scoping => ["created_by_id = ?"],
+                          :instance_id => :id, :content => :sdata_content,
+                          :feed => {:author => 'Test Author',
+                                    :path => '/customers',
+                                    :title => 'List of Test Items',
+                                    :default_items_per_page => 10,
+                                    :maximum_items_per_page => 100}
   
   def self.descends_from_active_record?
     true
