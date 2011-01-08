@@ -1,15 +1,35 @@
 require File.join(File.dirname(__FILE__), '..', 'spec_helper')
 
 describe SData::Collection::Feed do
-  def build_feed(*entries)
-   feed_options = { :author => 'Test Author',
-            :path => '/test_resource',
-            :title => 'List of Test Items',
-            :default_items_per_page => 10,
-            :maximum_items_per_page => 100 }
+  def build_scope(entries)
+    SData::Collection::Scope.new(Customer, nil, nil, nil).tap do |scope|
+      scope.stub! :resources => entries
+      scope.stub! :resource_count => entries.size
+    end
+    
+  end
 
-    params = { :dataset => '-' }
-    SData::Collection::Feed.new(Customer,  params,feed_options,  entries)
+  def build_context
+    stub('context').tap do |context|
+      context.stub! :dataset => '-'
+      context.stub! :query_params => {}
+      context.stub! :maximum_precedence => 100
+      context.stub! :included => []
+      context.stub! :selected => []
+      context.stub! :sync? => false
+      context.stub! :expand? => false
+    end
+  end
+  
+  def build_feed(*entries)
+    feed_options = { :author => 'Test Author',
+      :path => '/test_resource',
+      :title => 'List of Test Items',
+      :default_items_per_page => 10,
+      :maximum_items_per_page => 100 }
+
+    build_scope(entries)
+    SData::Collection::Feed.new(Customer,  build_scope(entries), Factory.build(:pagination), nil, build_context)
   end
 
   def feed_xml
