@@ -1,6 +1,6 @@
 require File.join(File.dirname(__FILE__), '..', 'spec_helper')
                                                           
-describe SData::Resource::ToAtom, "#to_atom" do
+describe SData::Resource::Base, "#to_atom" do
   describe "given a Resource" do
     before :all do
       class Base < SData::Resource::Base; end

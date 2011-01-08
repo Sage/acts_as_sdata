@@ -3,6 +3,7 @@ require File.join(File.dirname(__FILE__), '..', 'spec_helper')
 describe SData::Resource::Base, "#find_by_sdata_instance_id" do
   describe "given an SData::Resource::Base derivative" do
     before :all do
+      remove_constants :BaseModel
       BaseModel = Class.new(ActiveRecord::Base)
     end
 
