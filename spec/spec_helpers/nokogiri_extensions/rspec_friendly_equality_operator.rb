@@ -1,4 +1,4 @@
-rspec_friendly_equality_operator = lambda do
+RSpecFriendlyEqualityOperator = Trait.new do
   def ==(other)
     if other.is_a?(String)
       self.to_s == other
@@ -9,5 +9,5 @@ rspec_friendly_equality_operator = lambda do
 end
 
 [Nokogiri::XML::NodeSet, Nokogiri::XML::Text, Nokogiri::XML::Attr].each do |klass|
-  klass.class_eval &rspec_friendly_equality_operator
+  klass.__send__ :include, RSpecFriendlyEqualityOperator
 end
