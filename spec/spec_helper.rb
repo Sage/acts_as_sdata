@@ -19,7 +19,7 @@ require 'factory_girl'
 
 require ~'spec_helpers/fixtures/customer'
 require ~'spec_helpers/fixtures/entry'
-require ~'spec_helpers/fixtures/pagination'
+require ~'spec_helpers/fixtures/pagination_params'
 
 require ~'spec_helpers/parse_xml'
 require ~'spec_helpers/nokogiri_extensions/xxx_with_ns'

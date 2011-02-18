@@ -8,19 +8,12 @@ module SData
           @collection_scope ||= SData::Collection::Scope.new(sdata_resource, target_user, pagination, context).tap { |scope| scope.scope! }
         end
 
-        def pagination
-          @pagination ||= SData::Collection::Pagination.new(sdata_options[:feed][:default_items_per_page],
-                                                            sdata_options[:feed][:maximum__items_per_page],
-                                                            params[:startIndex].to_i,
-                                                            invalid_num?(params[:count]) ? nil : params[:count].to_i)
+        def pagination_params
+          @pagination_params ||= SData::Collection::PaginationParams.new(sdata_options[:feed], params)
         end
 
         def feed_links
-          @feed_links ||= SData::Collection::Links.new(sdata_resource.collection_url(context), pagination, context)
-        end
-
-        def invalid_num?(num)
-          num.nil? or num.empty? or (num.to_i.to_s != num)
+          @feed_links ||= SData::Collection::Links.new(sdata_resource.collection_base_url(context), pagination, context.query_params, collection_scope.resource_count)
         end
       end
     end
