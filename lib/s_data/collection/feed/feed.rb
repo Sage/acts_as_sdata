@@ -10,7 +10,7 @@ module SData
 
         atom_feed.set_properties(category_term, collection_url, feed_options)
         atom_feed.populate_open_search(scope.resource_count, pagination)
-        atom_feed.links << links
+        atom_feed.links += links.atom_links
         atom_feed.assign_entries(scope, context)
       end
 
