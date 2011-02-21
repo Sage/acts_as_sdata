@@ -1,7 +1,7 @@
 module SData
   class Collection
     class Pagination < Struct.new :pagination_params, :entry_count
-      delegate :items_per_page, :one_based_start_index, :zero_based_start_index, :to => :pagination_params
+      delegate :items_per_page, :start_index, :to => :pagination_params
       
       def single_page?
         page_count == 1
@@ -36,7 +36,7 @@ module SData
       end
 
       def current_page
-        zero_based_start_index / items_per_page + 1
+        (start_index - 1) / items_per_page + 1
       end
 
       def page_count

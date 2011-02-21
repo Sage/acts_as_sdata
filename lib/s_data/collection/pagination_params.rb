@@ -26,13 +26,7 @@ module SData
       def start_index
         [extract_number_from_params(:startIndex, 1), 1].max
       end
-
-      alias :one_based_start_index :start_index
-
-      def zero_based_start_index
-        start_index - 1
-      end
-
+      
       protected
 
       def extract_number_from_params(key, default_value)

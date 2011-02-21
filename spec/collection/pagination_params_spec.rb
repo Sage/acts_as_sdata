@@ -79,83 +79,37 @@ describe SData::Collection::PaginationParams do
     end
   end
 
-  context "when :startIndex is positive" do
-    before { @pagination_params = Factory.build :pagination_params, :params => { :startIndex => "5" } }
+  describe "#start_index" do
+    subject { @pagination_params.start_index }
     
-    describe "#one_based_start_index" do
-      subject { @pagination_params.one_based_start_index }
-
+    context "when :startIndex is positive" do
+      before { @pagination_params = Factory.build :pagination_params, :params => { :startIndex => "5" } }
+      
       it { should == 5 }
     end
 
-    describe "zero_based_start_index" do
-      subject { @pagination_params.zero_based_start_index }
-
-      it { should == 4 }
+    context "when :startIndex is absent" do
+      before { @pagination_params = Factory.build :pagination_params, :params => {} }
+      
+      it { should == 1 }
     end
-  end
 
-  context "when :startIndex is absent" do
-    before { @pagination_params = Factory.build :pagination_params, :params => {} }
-    
-    describe "#one_based_start_index" do
-      subject { @pagination_params.one_based_start_index }
+    context "when :startIndex is zero" do
+      before { @pagination_params = Factory.build :pagination_params, :params => { :startIndex => "0" } }
 
       it { should == 1 }
     end
 
-    describe "zero_based_start_index" do
-      subject { @pagination_params.zero_based_start_index }
-
-      it { should == 0 }
-    end
-  end
-
-  context "when :startIndex is zero" do
-    before { @pagination_params = Factory.build :pagination_params, :params => { :startIndex => "0" } }
-
-    describe "#one_based_start_index" do
-      subject { @pagination_params.one_based_start_index }
+    context "when :startIndex is negative" do
+      before { @pagination_params = Factory.build :pagination_params, :params => { :startIndex => "-5" } }
 
       it { should == 1 }
     end
 
-    describe "zero_based_start_index" do
-      subject { @pagination_params.zero_based_start_index }
-
-      it { should == 0 }
-    end
-  end
-
-  context "when :startIndex is negative" do
-    before { @pagination_params = Factory.build :pagination_params, :params => { :startIndex => "-5" } }
-
-    describe "#one_based_start_index" do
-      subject { @pagination_params.one_based_start_index }
+    context "when :startIndex is not a number" do
+      before { @pagination_params = Factory.build :pagination_params, :params => { :startIndex => "fifty" } }
 
       it { should == 1 }
-    end
-
-    describe "zero_based_start_index" do
-      subject { @pagination_params.zero_based_start_index }
-
-      it { should == 0 }
-    end
-  end
-
-  context "when :startIndex is not a number" do
-    before { @pagination_params = Factory.build :pagination_params, :params => { :startIndex => "fifty" } }
-
-    describe "#one_based_start_index" do
-      subject { @pagination_params.one_based_start_index }
-
-      it { should == 1 }
-    end
-
-    describe "zero_based_start_index" do
-      subject { @pagination_params.zero_based_start_index }
-
-      it { should == 0 }
     end
   end
 end
