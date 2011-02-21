@@ -5,9 +5,7 @@ module SData
         super(*args)
       end
       
-      def records_to_return
-        return default_items_per_page if count.nil?
-        
+      def items_per_page
         items_per_page = [count, maximum_items_per_page].min
         items_per_page = default_items_per_page if (items_per_page < 0)
         items_per_page
@@ -38,7 +36,7 @@ module SData
       protected
 
       def extract_number_from_params(key, default_value)
-        result = (params[key].to_i.to_s == params[key]) ? params[key].to_i : default_value
+        result = (params[key].to_i.to_s == params[key].to_s) ? params[key].to_i : default_value
       end
     end
   end
