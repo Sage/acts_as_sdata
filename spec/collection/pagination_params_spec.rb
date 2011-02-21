@@ -44,9 +44,15 @@ describe SData::Collection::PaginationParams do
       end
     end
   end
-  
-  describe "#records_to_return" do
-    subject { @pagination_params.records_to_return }
+
+  describe "#items_per_page" do
+    subject { @pagination_params.items_per_page }
+
+    context "when :count is a valid positive number" do
+      before { @pagination_params = Factory.build :pagination_params, :params => { :count => "5" } }
+
+      it { should == 5 }
+    end
     
     context "when :count is zero" do
       before { @pagination_params = Factory.build :pagination_params, :params => { :count => "0" } }
