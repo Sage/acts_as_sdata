@@ -126,7 +126,7 @@ describe SData::Collection, "opensearch" do
 
         def build_feed(params)
           params.merge! :dataset => '-'
-          collection = SData::Collection.new(models_with_serial_names, SomeResource, params)
+          collection = SData::Collection.new
           collection.feed
         end
         
@@ -177,7 +177,7 @@ describe SData::Collection, "opensearch" do
         end  
 
         it "should accept positive start index which is not greater than totalResults-itemsPerPage+1 and return itemsPerPage records" do
-          @feed = build_seed :startIndex => '11'
+          @feed = build_feed :startIndex => '11'
           
           @feed.opensearch("itemsPerPage").should == SomeResource.sdata_options[:feed][:default_items_per_page]
           @feed.opensearch("totalResults").should == 15
@@ -188,7 +188,7 @@ describe SData::Collection, "opensearch" do
         end  
 
         it "should accept positive start index which is greater than totalResults-itemsPerPage+1 but not greater than totalResults, and return fitting itemsPerPage" do
-          @feed = build_seed :startIndex => '12'
+          @feed = build_feed :startIndex => '12'
           
           @feed.opensearch("itemsPerPage").should == SomeResource.sdata_options[:feed][:default_items_per_page]
           @feed.opensearch("totalResults").should == 15
@@ -197,7 +197,7 @@ describe SData::Collection, "opensearch" do
           verify_content_for(@feed.entries, 12..15)
           verify_links_for(@feed.links, :self => '12', :first => '1', :last => '12', :previous => '7')
 
-          @feed = build_seed :startIndex => '15'
+          @feed = build_feed :startIndex => '15'
           
           @feed.opensearch("itemsPerPage").should == SomeResource.sdata_options[:feed][:default_items_per_page]
           @feed.opensearch("totalResults").should == 15
@@ -209,7 +209,7 @@ describe SData::Collection, "opensearch" do
         
         #RADAR: if this should generate error (e.g. OutOfBounds exception), this spec needs to change
         it "should accept positive start index which is greater than totalResults-itemsPerPage+1 but return nothing" do
-          @feed = build_seed :startIndex => '16'
+          @feed = build_feed :startIndex => '16'
           
           @feed.opensearch("itemsPerPage").should == SomeResource.sdata_options[:feed][:default_items_per_page]
           @feed.opensearch("totalResults").should == 15
