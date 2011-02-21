@@ -12,8 +12,16 @@ module SData
           @pagination_params ||= SData::Collection::PaginationParams.new(sdata_options[:feed], params)
         end
 
+        def pagination
+          @pagination ||= SData::Collection::Pagination.new(pagination_params, collection_scope.resource_count)
+        end
+
         def feed_links
-          @feed_links ||= SData::Collection::Links.new(sdata_resource.collection_base_url(context), pagination, context.query_params, collection_scope.resource_count)
+          @feed_links ||= SData::Collection::Links.new(url_composer, pagination)
+        end
+
+        def url_composer
+          @url_composer ||= SData::UrlComposer.new(sdata_resource.collection_base_url(context), context.query_params)
         end
       end
     end
