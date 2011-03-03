@@ -1,6 +1,11 @@
 module SData
   module Application
     class Context < Struct.new(:params, :query_params)
+      def initialize(*args)
+        super(*args)
+        query_params.symbolize_keys!
+      end
+      
       def sync?
         params[:sync].to_s == 'true'
       end
