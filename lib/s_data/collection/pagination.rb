@@ -4,7 +4,7 @@ module SData
       delegate :items_per_page, :start_index, :to => :pagination_params
       
       def single_page?
-        page_count == 1
+        page_count <= 1
       end
 
       def first_page?

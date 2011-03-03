@@ -15,6 +15,12 @@ describe SData::Collection::Pagination do
       
       it { should be_true }
     end
+
+    context "when collection is empty" do
+      before { @pagination = Factory.build(:pagination, :entry_count => 0) }
+      
+      it { should be_true }
+    end
   end
   
   describe "#first_page?" do
