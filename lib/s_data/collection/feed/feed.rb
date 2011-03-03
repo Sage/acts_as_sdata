@@ -62,10 +62,10 @@ module SData
           end
         end
 
-        def populate_open_search(total_results, pagination)
-          self[SData.config[:schemas]['opensearch'], 'totalResults'] << total_results
-          self[SData.config[:schemas]['opensearch'], 'startIndex'] << pagination.one_based_start_index
-          self[SData.config[:schemas]['opensearch'], 'itemsPerPage'] << pagination.records_to_return
+        def populate_open_search(entry_count, pagination)
+          self[SData.config[:schemas]['opensearch'], 'totalResults'] << entry_count
+          self[SData.config[:schemas]['opensearch'], 'startIndex'] << pagination.start_index
+          self[SData.config[:schemas]['opensearch'], 'itemsPerPage'] << pagination.items_per_page
         end
       end
     end
