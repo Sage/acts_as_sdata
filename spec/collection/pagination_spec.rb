@@ -179,6 +179,12 @@ describe SData::Collection::Pagination do
         should == 3
       end
     end
+
+    context "when collection is empty" do
+      before { @pagination = Factory.build :pagination, :entry_count => 0 }
+
+      it { should == 1 }
+    end
   end
 
   describe "#current_page" do
@@ -209,6 +215,23 @@ describe SData::Collection::Pagination do
       end
 
       it { should == 3 }
+    end
+
+    context "when collection is empty" do
+      before do
+        @pagination = Factory.build :pagination, :entry_count => 0
+      end
+
+      it { should == 1 }
+    end
+
+    context "whem empty page is requested" do
+      before do
+        pagination_params = Factory.build :pagination_params, :params => { :count => 0 }
+        @pagination = Factory.build :pagination, :pagination_params => pagination_params, :entry_count => 22
+      end
+
+      it { should == 1 }
     end
   end
 end

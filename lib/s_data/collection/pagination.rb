@@ -36,10 +36,14 @@ module SData
       end
 
       def current_page
+        return 1 if items_per_page.zero?
+        
         (start_index - 1) / items_per_page + 1
       end
 
       def page_count
+        return 1 if items_per_page.zero? or entry_count.zero?
+        
         entry_count % items_per_page == 0 ?
           entry_count / items_per_page :
           entry_count / items_per_page + 1
