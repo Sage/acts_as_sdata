@@ -14,8 +14,8 @@ module SData
       end
 
       # This just adds activerecord (mysql) pagination to the scope
-      def with_pagination(pagination)
-        scoped(:offset => pagination.zero_based_start_index, :limit => pagination.records_to_return)
+      def with_pagination(pagination_params)
+        scoped(:offset => pagination_params.start_index - 1, :limit => pagination_params.items_per_page)
       end
 
       # This calls with_scope on the base class domain object to add

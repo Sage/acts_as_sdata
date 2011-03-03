@@ -5,7 +5,7 @@ module SData
         protected
 
         def collection_scope
-          @collection_scope ||= SData::Collection::Scope.new(sdata_resource, target_user, pagination, context).tap { |scope| scope.scope! }
+          @collection_scope ||= SData::Collection::Scope.new(sdata_resource, target_user, pagination_params, context).tap { |scope| scope.scope! }
         end
 
         def pagination_params
@@ -21,7 +21,7 @@ module SData
         end
 
         def url_composer
-          @url_composer ||= SData::UrlComposer.new(sdata_resource.collection_base_url(context), context.query_params)
+          @url_composer ||= SData::Collection::Links::UrlComposer.new(sdata_resource.collection_base_url(context), context.query_params)
         end
       end
     end

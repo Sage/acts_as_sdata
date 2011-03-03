@@ -1,12 +1,12 @@
 module SData
   class Collection
-    class Scope < Struct.new(:resource_class, :target_user, :pagination, :context)
+    class Scope < Struct.new(:resource_class, :target_user, :pagination_params, :context)
       attr_reader :resource_count, :resources
 
       def scope!
         with_sdata_scope do |scope|
           self.resource_count = context.linked? ? scope.count_with_deleted : scope.count
-          self.resources = context.linked? ? scope.with_pagination(pagination).all_with_deleted : scope.with_pagination(pagination).all
+          self.resources = context.linked? ? scope.with_pagination(pagination_params).all_with_deleted : scope.with_pagination(pagination_params).all
         end
       end
 
