@@ -6,7 +6,6 @@ describe SData::Collection::Feed do
       scope.stub! :resources => entries
       scope.stub! :resource_count => entries.size
     end
-    
   end
 
   def build_context
@@ -20,6 +19,17 @@ describe SData::Collection::Feed do
       context.stub! :expand? => false
     end
   end
+
+  def build_links
+    SData::Collection::Links.new(nil, nil).tap do |links|
+      links.stub! :atom_links => []
+    end
+  end
+
+  def build_pagination(entries_count)
+    pagination_params = SData::Collection::PaginationParams.new Hash.new, Hash.new
+    SData::Collection::Pagination.new(pagination_params, entries_count)
+  end
   
   def build_feed(*entries)
     feed_options = { :author => 'Test Author',
@@ -28,8 +38,7 @@ describe SData::Collection::Feed do
       :default_items_per_page => 10,
       :maximum_items_per_page => 100 }
 
-    build_scope(entries)
-    SData::Collection::Feed.new(Customer,  build_scope(entries), Factory.build(:pagination), nil, build_context)
+    SData::Collection::Feed.new(Customer,  build_scope(entries), build_pagination(entries.size), build_links, build_context)
   end
 
   def feed_xml
