@@ -42,11 +42,11 @@ module SData
         SData::Collection::Entry.new(self, context).atom_entry
       end
       
-      protected
-      
       def sdata_default_author
         "Billing Boss"
       end
+
+      protected
 
       def default_entity_title
         "#{self.class.name.demodulize.titleize} #{id}"
