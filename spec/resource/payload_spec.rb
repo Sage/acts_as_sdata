@@ -43,7 +43,9 @@ describe SData::Resource::Base, "#to_atom" do
       end
 
       def payload(options)
-        xml = Nokogiri::XML(@customer.to_atom(options).to_xml) { |config| config.noblanks }
+        context = SData::Application::Context.new
+        context.params = options
+        xml = Nokogiri::XML(@customer.to_atom(context).to_xml) { |config| config.noblanks }
         xml.xpath('xmlns:entry/sdata:payload').first
       end
 
@@ -605,14 +607,15 @@ describe SData::Resource::Base, "#to_atom" do
       end
       
       it "properly escapes xml content in user data" do
+        context = SData::Application::Context.new :options => { :dataset => 'myDataSet' }
         Customer.class_eval { has_sdata_options :content => :sdata_content }
         Contact.class_eval { has_sdata_options :content => :sdata_content }
         @customer.name = "</crmErp:name><div>asdf</div>"
         @customer.number = "<div>123456</div>"
-        @customer.to_atom(:dataset => 'myDataSet').sdata_payload.to_xml.to_s.include?("</crmErp:name><div>asdf</div>").should == false
-        @customer.to_atom(:dataset => 'myDataSet').sdata_payload.to_xml.to_s.include?("<div>123456</div>").should == false
-        @customer.to_atom(:dataset => 'myDataSet').sdata_payload.to_xml.to_s.include?("&lt;/crmErp:name&gt;&lt;div&gt;asdf&lt;/div&gt;").should == true
-        @customer.to_atom(:dataset => 'myDataSet').sdata_payload.to_xml.to_s.include?("&lt;div&gt;123456&lt;/div&gt;").should == true
+        @customer.to_atom(context).sdata_payload.to_xml.to_s.include?("</crmErp:name><div>asdf</div>").should == false
+        @customer.to_atom(context).sdata_payload.to_xml.to_s.include?("<div>123456</div>").should == false
+        @customer.to_atom(context).sdata_payload.to_xml.to_s.include?("&lt;/crmErp:name&gt;&lt;div&gt;asdf&lt;/div&gt;").should == true
+        @customer.to_atom(context).sdata_payload.to_xml.to_s.include?("&lt;div&gt;123456&lt;/div&gt;").should == true
       end  
     end
   end
