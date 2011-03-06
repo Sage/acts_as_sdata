@@ -11,7 +11,6 @@ class ModelBase < SData::Resource::Base
   end
   
   def sdata_options
-    {}
+    self.class.sdata_options
   end
-  
 end
