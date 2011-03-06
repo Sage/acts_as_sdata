@@ -1,6 +1,7 @@
 require 'active_support'
 require 'action_controller'
-require 'atom' # TODO: add ratom _dependency_
+require 'atom' 
+require 'builder' # TODO: define runtime and development dependencies
 
 module SData
   class << self
