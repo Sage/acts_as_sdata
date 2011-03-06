@@ -3,6 +3,7 @@ module SData
     class Context < Struct.new(:params, :query_params)
       def initialize(*args)
         super(*args)
+        self.query_params ||= {}
         query_params.symbolize_keys!
       end
       
