@@ -9,9 +9,9 @@ module SData
 
         self.diagnosis = false
         self.options = {
-          :atom_show_categories => true,
-          :atom_show_links => true,
-          :atom_show_authors => true
+          :show_categories => true,
+          :show_links => true,
+          :show_authors => true
         }.merge(options || {})
 
         begin
@@ -27,7 +27,7 @@ module SData
       protected
 
       def show_categories?
-        options[:show_catories]
+        options[:show_categories]
       end
 
       def show_links?
@@ -54,7 +54,7 @@ module SData
                                         :href => resource.instance_url(context),
                                         :type => 'application/atom+xml; type=entry', 
                                         :title => 'Refresh') if show_links?
-          
+
           entry.categories << Atom::Category.new(:scheme => 'http://schemas.sage.com/sdata/categories',
                                                  :term   => resource.sdata_node_name,
                                                  :label  => resource.sdata_node_name.underscore.humanize.titleize) if show_categories?
