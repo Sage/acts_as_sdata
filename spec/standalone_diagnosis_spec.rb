@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), '..', 'spec_helper')
+require File.join(File.dirname(__FILE__), 'spec_helper')
 
 describe SData::Diagnosis do
   context "when exception is raised at the action method level" do    
