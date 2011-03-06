@@ -46,7 +46,7 @@ describe SData::Collection::Links::UrlComposer do
       before { subject.query_params = { :w00t => '42' } }
       
       it "should add those parameters in a row" do
-        subject.compose_link_url(6).should == "http://billingboss.com/pancakes?startIndex=6&w00t=42"
+        subject.compose_link_url(6).should == "http://billingboss.com/pancakes?w00t=42&startIndex=6"
       end
     end
   end
