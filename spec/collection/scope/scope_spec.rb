@@ -22,16 +22,6 @@ describe SData::Collection::Scope do
     @collection_scope.scope.scope.send(:scoped_methods)
   end
 
-  describe "#with_predicate" do
-    context "when argument is nil" do
-      it "should not raise a error" do
-        lambda { SomeResource.with_predicate(nil) {} }.should_not raise_error
-      end
-    end
-  end
-
-  
-
   context "when model is non-linked" do
     context "when params contain where clause" do
       before { set_collection_scope 'where bornAt gt 1900' => nil }
