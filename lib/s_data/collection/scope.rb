@@ -4,7 +4,7 @@ module SData
       attr_reader :resource_count, :resources
 
       def scope!
-        self.resource_count = context.linked? ? paginated_sdata_scope.count_with_deleted : paginated_sdata_scope.count
+        self.resource_count = context.linked? ? sdata_scope.count_with_deleted : sdata_scope.count
         self.resources = context.linked? ? paginated_sdata_scope.all_with_deleted : paginated_sdata_scope.all
       end
 
