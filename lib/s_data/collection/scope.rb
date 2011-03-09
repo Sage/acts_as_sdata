@@ -4,10 +4,16 @@ module SData
       attr_reader :resource_count, :resources
 
       def scope!
-        with_sdata_scope do |scope|
-          self.resource_count = context.linked? ? scope.count_with_deleted : scope.count
-          self.resources = context.linked? ? scope.with_pagination(pagination_params).all_with_deleted : scope.with_pagination(pagination_params).all
-        end
+        self.resource_count = context.linked? ? paginated_sdata_scope.count_with_deleted : paginated_sdata_scope.count
+        self.resources = context.linked? ? paginated_sdata_scope.all_with_deleted : paginated_sdata_scope.all
+      end
+
+      def paginated_sdata_scope
+        sdata_scope.with_pagination(pagination_params)
+      end
+
+      def sdata_scope
+        initial_scope.with_predicate(where_clause_from_params).with_linking(context.linked?)
       end
 
       protected
@@ -34,7 +40,7 @@ module SData
       #     named_scope :sdata_scope_for_context, 
       #                 lambda{|context| {:conditions =>{:user_id => context.current_user}}}
       def with_sdata_scope #:yields: scoped_resource_class
-        yield initial_scope.with_predicate(where_clause_from_params).with_linking(context.linked?)
+        yield sdata_scope
       end
     end
   end  

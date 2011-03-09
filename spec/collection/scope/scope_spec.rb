@@ -14,12 +14,17 @@ describe SData::Collection::Scope do
   end
 
   def set_collection_scope(params)
-    pagination = Factory.build(:pagination)
-    @collection_scope = SData::Collection::Scope.new(SomeResource, params, pagination)
+    
+    target_user = double :user, :id => 1
+    pagination_params = SData::Collection::PaginationParams.new Hash.new, Hash.new
+    context = SData::Application::Context.new(params, {})
+    
+    @collection_scope = SData::Collection::Scope.new(SomeResource, target_user, pagination_params, context)
   end
 
   def scope_conditions
-    @collection_scope.scope.scope.send(:scoped_methods)
+    scoped_methods = @collection_scope.sdata_scope.baze_scope.__send__(:current_scoped_methods)
+    scoped_methods.nil? ? {} : scoped_methods[:find]
   end
 
   context "when model is non-linked" do
@@ -27,23 +32,23 @@ describe SData::Collection::Scope do
       before { set_collection_scope 'where bornAt gt 1900' => nil }
 
       it "should apply to SData::Predicate for conditions" do
-        scope_conditions.should == [{ :conditions => ["\"born_at\" > ?", '1900'] }]
+        scope_conditions.should == { :conditions => ["\"born_at\" > ?", '1900'] }
       end
 
       context "when condition contain 'ne' relation" do
         before { set_collection_scope 'where bornAt gt 1900' => nil }
 
         it "should parse it correctly" do
-          scope_conditions.should == { :conditions => ["\"born_at\" <> ?", '1900'] }
+          scope_conditions.should == { :conditions => ["\"born_at\" > ?", '1900'] }
         end
       end
     end
 
     context "when params do not contain neither :predicate key nor where clause" do
-      before { set_collection_scope({}) }
+      before { set_collection_scope Hash.new }
 
       it "should return all entity records" do
-        scope_conditions.should == []
+        scope_conditions.should == {}
       end
     end
   end
@@ -60,7 +65,7 @@ describe SData::Collection::Scope do
         before { set_collection_scope 'where born_at gt 1900' => nil, :condition => '$linked' }
 
         it "should apply to SData::Predicate for conditions and append requirement for simply guid" do
-          # BaseModel.should_receive(:find_with_deleted).with(:all, {:conditions => ['"born_at" > ? and id IN (SELECT bb_model_id FROM sd_uuids WHERE bb_model_type = \'BaseModel\' and sd_class = \'SomeResource\')', '1900']}
+          scope_conditions.should == { :conditions=>"(base_models.id IN (SELECT bb_model_id FROM sd_uuids WHERE (bb_model_type = 'BaseModel') and (sd_class = 'SomeResource'))) AND (\"born_at\" > '1900')" }
         end
       end
 
@@ -68,7 +73,7 @@ describe SData::Collection::Scope do
         before { set_collection_scope :condition => '$linked' }
 
         it "should return all entity records with simply guid" do
-          # BaseModel.should_receive(:find_with_deleted).with(:all, {:conditions => ['id IN (SELECT bb_model_id FROM sd_uuids WHERE bb_model_type = \'BaseModel\' and sd_class = \'SomeResource\')']}).and_return([@returned_entries])
+          scope_conditions.should == { :conditions=>"base_models.id IN (SELECT bb_model_id FROM sd_uuids WHERE (bb_model_type = 'BaseModel') and (sd_class = 'SomeResource'))" } 
         end
       end
     end
@@ -77,16 +82,18 @@ describe SData::Collection::Scope do
   context "when configured with scoping" do
     before :all do
       SomeResource.class_eval do
-        has_sdata_options :link => :simply_guid,
-                          :scoping => ["created_by_id = ?"]
+        initial_scope do |user|
+          { :conditions => { :created_by_id => user.id } }
+        end
+        has_sdata_options :link => :simply_guid
       end
     end
 
     context "with no other params" do
-      before { set_collection_scope {} }
+      before { set_collection_scope Hash.new }
 
       it "should return all entity records created_by scope" do
-        scope_conditions.should == { :conditions => ['created_by_id = ?', "#{@user.id}"] }
+        scope_conditions.should == { :conditions => { :created_by_id => 1 } }
       end
     end
 
@@ -94,7 +101,7 @@ describe SData::Collection::Scope do
       before  { set_collection_scope 'where born_at gt 1900' => nil, :condition => '$linked' }
 
       it "should return all entity records with created_by, predicate, and link scope" do
-        # BaseModel.should_receive(:find_with_deleted).with(:all, {:conditions => ['"born_at" > ? and created_by_id = ? and id IN (SELECT bb_model_id FROM sd_uuids WHERE bb_model_type = \'BaseModel\' and sd_class = \'SomeResource\')', '1900', @user.id.to_s]}).and_return([@returned_entries])
+        scope_conditions.should == { :conditions=>"((base_models.id IN (SELECT bb_model_id FROM sd_uuids WHERE (bb_model_type = 'BaseModel') and (sd_class = 'SomeResource'))) AND (\"born_at\" > '1900')) AND (\"base_models\".\"created_by_id\" = 1)" }
       end
     end
   end
