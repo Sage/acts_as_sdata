@@ -5,8 +5,8 @@ module SData
         attribute = self.sdata_options[:instance_id]
 
         attribute.nil? ?
-        self.find(value.to_i) :
-          self.first(:conditions => { attribute => value })
+          self.find(value.to_i) :
+          self.find(:first, :conditions => { attribute => value })
       end
 
       def sdata_node_name
