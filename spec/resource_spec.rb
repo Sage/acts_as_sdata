@@ -10,7 +10,7 @@ describe SData::Resource::Base do
         end
       end
 
-      context "when .initial_scope is called withing class body" do
+      context "when .initial_scope is called within class body" do
         before :all do
           TestResource.class_eval do
             initial_scope do |user|
@@ -25,7 +25,8 @@ describe SData::Resource::Base do
 
         it "should pass given block to a scope" do
           fake_user = stub('user', :id => 1)
-          TestModel.sdata_scope_for_context(fake_user).proxy_options.should == { :conditions => { :created_by_id => 1 } }
+          scope = TestModel.sdata_scope_for_context(fake_user)
+          scope.current_scoped_methods[:find].should == { :conditions => { :created_by_id => 1 } }
         end
       end
     end
