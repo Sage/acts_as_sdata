@@ -9,7 +9,7 @@ describe SData::Collection::Links::UrlComposer do
         subject.compose_link_url(1).should == "http://billingboss.com/pancakes"
       end
     end
-    
+
     context "when startIndex is not 1" do
       it "should be added to URL" do
         subject.compose_link_url(6).should == "http://billingboss.com/pancakes?startIndex=6"
@@ -34,10 +34,10 @@ describe SData::Collection::Links::UrlComposer do
       end
 
       context "when provided :count param it does not equal to default value" do
-        before { subject.query_params = { :count => 5 } }
+        before { subject.query_params = { :count => 6 } }
         
         it "should be added to URL" do
-          subject.compose_link_url(6).should == "http://billingboss.com/pancakes?count=5&startIndex=6"
+          subject.compose_link_url(6).should == "http://billingboss.com/pancakes?startIndex=6&count=6"
         end
       end
     end
@@ -46,7 +46,7 @@ describe SData::Collection::Links::UrlComposer do
       before { subject.query_params = { :w00t => '42' } }
       
       it "should add those parameters in a row" do
-        subject.compose_link_url(6).should == "http://billingboss.com/pancakes?w00t=42&startIndex=6"
+        subject.compose_link_url(6).should == "http://billingboss.com/pancakes?startIndex=6&w00t=42"
       end
     end
   end
