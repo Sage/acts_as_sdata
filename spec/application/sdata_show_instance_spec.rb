@@ -4,7 +4,9 @@ describe SData::Application, "#sdata_show_instance" do
   before :all do
     module Sage
       module BusinessLogic
-        class ExceptionAccessDeniedException < StandardError; end
+        module Exception
+          class IncompatibleDataException < StandardError; end
+        end
       end
     end
   end
@@ -47,23 +49,16 @@ describe SData::Application, "#sdata_show_instance" do
         describe "when record with such id exists but does not belong to user" do
           before :each do
             @record = SomeResource.new
-            @record.stub! :owner => OpenStruct.new(:sage_username => 'mary', :id => 2)
+            @record.stub! :owner => OpenStruct.new(:sage_username => 'mary', :id => 2, :biller => OpenStruct.new(:bookkeepers => []))
             SomeResource.should_receive(:find_by_sdata_instance_id).with(@instance_id).and_return(@record)
           end
   
-          it "should render atom entry of the record" do
-            # Can't get raise_error to work properly :/
-            entry = Atom::Entry.new
-            @application.should_receive(:handle_exception)
-            @application.sdata_show_instance
+          it "should raise an exception" do
+            lambda { @application.sdata_show_instance }.should raise_error(Sage::BusinessLogic::Exception::IncompatibleDataException)
           end
         end
   
         describe "when record with such id does not exist" do
-          before :each do
-            SomeResource.should_receive(:find_by_sdata_instance_id).with(@instance_id).and_return(nil)
-          end
-  
           it "should..." do
             pending "wasn't defined yet"
           end
